@@ -1,9 +1,8 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import './ExpressionBuilder.css';
 import Part from './Part';
 
-export class ExpressionPart {
+class ExpressionPart {
     type: string;
     value: any;
     id: number;
@@ -14,7 +13,7 @@ export class ExpressionPart {
     }
 }
 
-export const types = {
+export const types: any = {
     draggable: {
         operator: 'operator',
         brackets: 'brackets',
@@ -48,19 +47,25 @@ export const operators = [
 ///
 // Component
 ///
+interface IExpressionBuilderProps {
+    expression: string;
+    viewModel: Object;
+    onExpressionChanged(expression: string): void;
+}
 
-class ExpressionBuilder extends React.Component {
+export class ExpressionBuilder extends React.Component<IExpressionBuilderProps> {
     viewModelProps: string[] = [];
-    activeDraggable: string? = null;
-    activeDroppableIndex: number? = null;
+    activeDraggable: string = '';
+    activeDroppableIndex: number = NaN;
     parts: ExpressionPart[] = [];
 
-    constructor(props: any) {
+    constructor(props: IExpressionBuilderProps) {
         super(props);
         for (let p in props.viewModel) {
             this.viewModelProps.push(p);
         }
     }
+
 
     get expression() {
         return this.props.expression;
@@ -83,11 +88,9 @@ class ExpressionBuilder extends React.Component {
                 throw new Error('Unexpected value');
             }
         });
-        console.log(stringParts);
-        console.log(this.parts);
     }
 
-    onPartValueChanged(id: number, val: any) {
+    onPartValueChanged(id: number, val: string | number) {
         let currentPart = this.parts.find(p => p.id === id);
         if (currentPart) currentPart.value = val;
         this.props.onExpressionChanged(this.printExpression());
@@ -109,10 +112,9 @@ class ExpressionBuilder extends React.Component {
     }
 
     addParts() {
-        console.log('end');
         console.log(this.activeDraggable);
         console.log(this.activeDroppableIndex);
-        if (this.activeDraggable && this.activeDroppableIndex) {
+        if (this.activeDraggable !== '' && !isNaN(this.activeDroppableIndex)) {
             if (this.activeDraggable === types.draggable.brackets) {
                 this.parts = [
                     ...this.parts.slice(0, this.activeDroppableIndex),
@@ -121,12 +123,12 @@ class ExpressionBuilder extends React.Component {
                     ...this.parts.slice(this.activeDroppableIndex),
                 ];
             } else {
-                let waitingType: string? = null;
-                let initialValue: number? = null;
+                let waitingType: string = '';
+                let initialValue: string | number = '';
                 switch (this.activeDraggable) {
                     case types.draggable.operator:
                         waitingType = types.part.operatorSelect;
-                        initialValue = +operators[0];
+                        initialValue = operators[0];
                         break;
                     case types.draggable.num:
                         waitingType = types.part.numInput;
@@ -134,24 +136,26 @@ class ExpressionBuilder extends React.Component {
                         break;
                     case types.draggable.model:
                         waitingType = types.part.modelSelect;
-                        initialValue = +this.viewModelProps[0]
+                        initialValue = this.viewModelProps[0]
                         break;
                     default:
                         break;
                 }
-                if (waitingType && initialValue) {
+                if (waitingType && (initialValue || initialValue === 0)) {
                     this.parts = [
                         ...this.parts.slice(0, this.activeDroppableIndex),
                         new ExpressionPart(waitingType, initialValue, 1001 + this.parts.length),
                         ...this.parts.slice(this.activeDroppableIndex),
                     ];
                 }
+                // console.log(this.parts);
+
             }
 
             this.props.onExpressionChanged(this.printExpression());
         }
-        this.activeDraggable = null;
-        this.activeDroppableIndex = null;
+        this.activeDraggable = '';
+        this.activeDroppableIndex = NaN;
     }
 
     removePart(id: number) {
@@ -166,24 +170,24 @@ class ExpressionBuilder extends React.Component {
         }
         this.parseExpresiion();
         return (
-            <div className= 'wrap'>
-            <div className='header'>
-                <span className='header-caption' > Элементы конструктора выражения: </span>
-                    <div className = 'parts' >
-                        { draggables }
-                        </div>
-                        </div>
-                        <div className = 'expression' >
-                            { this.buildDroppable(0) }
-        {
-            this.parts.map((part, index) =>
-                [
-                    this.buildPart(part),
-                    this.buildDroppable(index + 1),
-                ]
-            )
-        }
-        </div>
+            <div className='wrap'>
+                <div className='header'>
+                    <span className='header-caption' > Элементы конструктора выражения: </span>
+                    <div className='parts' >
+                        {draggables}
+                    </div>
+                </div>
+                <div className='expression' >
+                    {this.buildDroppable(0)}
+                    {
+                        this.parts.map((part, index) =>
+                            [
+                                this.buildPart(part),
+                                this.buildDroppable(index + 1),
+                            ]
+                        )
+                    }
+                </div>
             </div>
         );
     }
@@ -195,81 +199,76 @@ class ExpressionBuilder extends React.Component {
     buildDraggable(draggableType: string) {
         return (
             <div
-                style={this.draggableStyle }
-                draggable = { true}
-                onDragStart = {
-                    () => { this.activeDraggable = draggableType; console.log('start'); }
+                style={this.draggableStyle}
+                draggable={true}
+                onDragStart={
+                    () => { this.activeDraggable = draggableType }
                 }
-                onDragEnd = { this.addParts.bind(this) }
-                key = { draggableType }
+                onDragEnd={this.addParts.bind(this)}
+                key={draggableType}
             >
-                { draggableType }
+                {draggableType}
             </div>
         );
+    }
+
+    buildDroppable(index: number) {
+        return (
+            <div
+                style={this.droppableStyle}
+                draggable={true}
+                onDragOver={(e) => {
+                    e.preventDefault();
+                    this.activeDroppableIndex = index
+                }}
+                onDragLeave={() => {
+                    setTimeout(() => {
+                        this.activeDroppableIndex = NaN;
+                    }, 10);
+                }}
+                key={index}
+            > </div>
+        );
+    }
+
+    buildPart(part: ExpressionPart) {
+        return (
+            <Part value={part.value}
+                viewModelProps={this.viewModelProps}
+                type={part.type}
+                id={part.id}
+                key={part.id}
+                removePart={this.removePart.bind(this)}
+                onPartValueChanged={this.onPartValueChanged.bind(this)}
+            />
+        );
+    }
+
+    ///
+    //  Styles
+    ///
+
+    draggableStyle = {
+        height: '1.5rem',
+        minWidth: '4rem',
+        borderRadius: '4px',
+        border: 'solid 1px #efefef',
+        margin: '0 4px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontSize: '.75rem',
+        padding: '0 3px',
+        lineHeight: 1,
+    }
+
+    droppableStyle = {
+        height: '1.5rem',
+        minWidth: '.4rem',
+        borderRadius: '4px',
+        border: 'solid 1px #efefef',
+        margin: '0 4px',
+    }
 }
-
-buildDroppable(index: number) {
-    return (
-        <div
-            style= { this.droppableStyle }
-            draggable = { true}
-            onDragOver = {(e) => {
-                e.preventDefault();
-                this.activeDroppableIndex = index
-            }}
-            onDragLeave = {() => {
-                setTimeout(() => {
-                    this.activeDroppableIndex = null;
-                }, 10);
-            }}
-            key = { index }
-                > </div>
-                    );
-                }
-
-buildPart(part: ExpressionPart) {
-    return (
-        <Part value= { part.value }
-            viewModelProps = { this.viewModelProps }
-            type = { part.type }
-            id = { part.id }
-            key = { part.id }
-            removePart = { this.removePart.bind(this) }
-            onPartValueChanged = { this.onPartValueChanged.bind(this) }
-        />
-    );
-}
-
-///
-//  Styles
-///
-
-draggableStyle = {
-    height: '1.5rem',
-    minWidth: '4rem',
-    borderRadius: '4px',
-    border: 'solid 1px #efefef',
-    margin: '0 4px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontSize: '.75rem',
-    padding: '0 3px',
-    lineHeight: 1,
-}
-
-droppableStyle = {
-    height: '1.5rem',
-    minWidth: '.4rem',
-    borderRadius: '4px',
-    border: 'solid 1px #efefef',
-    margin: '0 4px',
-}
-}
-
-// ExpressionBuilder.propTypes = {
-//     expression: PropTypes.string.isRequired,
-//     viewModel: PropTypes.object.isRequired,
-// }
 
 export default ExpressionBuilder

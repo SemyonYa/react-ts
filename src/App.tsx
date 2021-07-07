@@ -1,8 +1,12 @@
+import './App.css';
 import React from 'react';
 import ExpressionBuilder from './ExpressionBuilder/ExpressionBuilder';
-import './App.css';
 
-class App extends React.Component {
+interface IAppState {
+  expression: string;
+}
+
+class App extends React.PureComponent<{}, IAppState> {
   fake: Fake;
   constructor(props: any) {
     super(props)
@@ -30,14 +34,10 @@ class App extends React.Component {
   }
 }
 
-export default App;
-
-
 export class Fake {
   id: string;
   name: string;
   age: string;
-  // id: string, name: string, age: string
   constructor() {
     this.id = '';
     this.name = 'name';
@@ -45,25 +45,4 @@ export class Fake {
   }
 }
 
-// function App() {
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         <img src={logo} className="App-logo" alt="logo" />
-//         <p>
-//           Edit <code>src/App.tsx</code> and save to reload.
-//         </p>
-//         <a
-//           className="App-link"
-//           href="https://reactjs.org"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           Learn React
-//         </a>
-//       </header>
-//     </div>
-//   );
-// }
-
-// export default App;
+export default App;

@@ -1,17 +1,34 @@
 import React from 'react';
 import { operators, types } from './ExpressionBuilder';
 
-class Part extends React.Component {
-    currentTimeout;
+interface IPartProps {
+    value: any;
+    viewModelProps: string[];
+    type: string;
+    id: number;
+    removePart(id: number): void;
+    onPartValueChanged(id: number, value: any): void;
+}
 
-    constructor(props) {
+interface IPartState {
+    value: any
+}
+
+export class Part extends React.PureComponent<IPartProps, IPartState> {
+    currentTimeout: any;
+    initialValue: any;
+
+    constructor(props: IPartProps) {
         super(props);
+        console.log(props);
+        
+        this.initialValue = props.value;
         this.state = {
             value: props.value,
         };
     }
 
-    changeInput(e) {
+    changeInput(e: React.ChangeEvent<HTMLInputElement>) {
         this.setState({
             value: e.target.value
         });
@@ -21,11 +38,13 @@ class Part extends React.Component {
         }, 500);
     }
 
-    changeSelect(e) {
+    changeSelect(e: React.ChangeEvent<HTMLSelectElement>) {
         this.props.onPartValueChanged(this.props.id, e.target.value);
     }
 
     render() {
+        console.log(this.props.type);
+
         return (
             <div style={this.wrapStyles}>
                 {/* FIELDS */}
@@ -49,7 +68,7 @@ class Part extends React.Component {
                 }
                 {this.props.type === types.part.numInput &&
                     <div style={this.itemStyles}>
-                        <input type='number' value={this.state.value} style={this.inputStyles} onChange={this.changeInput.bind(this)} />
+                        <input type='number' value={this.state.value ?? this.initialValue} style={this.inputStyles} onChange={this.changeInput.bind(this)} />
                     </div>
                 }
                 {/* BRACKETS */}
@@ -65,33 +84,33 @@ class Part extends React.Component {
         );
     }
 
-    wrapStyles = {
+    wrapStyles: Object = {
         position: 'relative',
         // height: '1.5rem',
-        // width: '65px',
+        width: '65px',
         borderRadius: '4px',
-        // border: 'solid 1px #efefef',
+        border: 'solid 1px #efefef',
         display: 'flex',
     };
 
-    itemStyles = {
+    itemStyles: Object = {
         display: 'flex',
         flex: '0 1 calc(100% - 10px)',
         justifyContent: 'center',
         alignItems: 'center',
         fontSize: '11px',
         padding: '0 3px',
-        lineHeight: 1,
+        lineHeight: '1',
     }
 
-    inputStyles = {
+    inputStyles: Object = {
         width: '100%',
         backgroundColor: 'transparent',
         border: 'none',
-        // borderBottom: 'solid 1px #cecece'
+        borderBottom: 'solid 1px #cecece'
     }
 
-    removeStyle = {
+    removeStyle: Object = {
         // position: 'absolute',
         top: '-.25rem',
         right: '0px',
@@ -109,8 +128,8 @@ class Part extends React.Component {
     }
 }
 
-Part.propTypes = {
+// Part.propTypes = {
 
-}
+// }
 
 export default Part
