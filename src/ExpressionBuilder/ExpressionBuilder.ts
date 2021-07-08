@@ -168,27 +168,46 @@ export class ExpressionBuilder extends React.Component<IExpressionBuilderProps> 
         for (let d in types.draggable) {
             draggables.push(this.buildDraggable(types.draggable[d]));
         }
+        this.parts = [];
         this.parseExpresiion();
         return (
-            <div className='wrap'>
-                <div className='header'>
-                    <span className='header-caption' > Элементы конструктора выражения: </span>
-                    <div className='parts' >
-                        {draggables}
-                    </div>
-                </div>
-                <div className='expression' >
-                    {this.buildDroppable(0)}
-                    {
-                        this.parts.map((part, index) =>
-                            [
-                                this.buildPart(part),
-                                this.buildDroppable(index + 1),
-                            ]
-                        )
-                    }
-                </div>
-            </div>
+            React.createElement('div', { className: 'wrap' },
+                React.createElement('div', { className: 'header' },
+                    React.createElement('span', { className: 'header-caption' }, 'Элементы конструктора выражения:'),
+                    React.createElement('div', { className: 'parts' },
+                        ...draggables
+                    ),
+                ),
+                React.createElement('div', { className: 'expression' },
+                    this.buildDroppable(0),
+                    ...React.Children.toArray(this.parts.map((part, index) =>
+                        [
+                            this.buildPart(part),
+                            this.buildDroppable(index + 1),
+                        ]
+                    )),
+                )
+            )
+
+            // <div className='wrap'>
+            //     <div className='header'>
+            //         <span className='header-caption' > Элементы конструктора выражения: </span>
+            //         <div className='parts' >
+            //             {draggables}
+            //         </div>
+            //     </div>
+            //     <div className='expression' >
+            //         {this.buildDroppable(0)}
+            //         {
+            //             this.parts.map((part, index) =>
+            //                 [
+            //                     this.buildPart(part),
+            //                     this.buildDroppable(index + 1),
+            //                 ]
+            //             )
+            //         }
+            //     </div>
+            // </div>
         );
     }
 
@@ -196,52 +215,93 @@ export class ExpressionBuilder extends React.Component<IExpressionBuilderProps> 
     // Elements
     ///
 
-    buildDraggable(draggableType: string) {
-        return (
-            <div
-                style={this.draggableStyle}
-                draggable={true}
-                onDragStart={
-                    () => { this.activeDraggable = draggableType }
-                }
-                onDragEnd={this.addParts.bind(this)}
-                key={draggableType}
-            >
-                {draggableType}
-            </div>
+    buildDraggable(draggableType: string): React.ReactNode {
+        return React.createElement(
+            'div',
+            {
+                style: this.draggableStyle,
+                draggable: true,
+                onDragStart: () => { this.activeDraggable = draggableType },
+                onDragEnd: this.addParts.bind(this),
+                key: draggableType,
+            },
+            draggableType,
         );
     }
+    // {
+    //     return (
+    //         <div
+    //             style={this.draggableStyle}
+    //             draggable={true}
+    //             onDragStart={
+    //                 () => { this.activeDraggable = draggableType }
+    //             }
+    //             onDragEnd={this.addParts.bind(this)}
+    //             key={draggableType}
+    //         >
+    //             {draggableType}
+    //         </div>
+    //     );
+    // }
 
     buildDroppable(index: number) {
-        return (
-            <div
-                style={this.droppableStyle}
-                draggable={true}
-                onDragOver={(e) => {
+        return React.createElement('div',
+            {
+                style: this.droppableStyle,
+                draggable: true,
+                onDragOver: (e) => {
                     e.preventDefault();
                     this.activeDroppableIndex = index
-                }}
-                onDragLeave={() => {
+                },
+                onDragLeave: () => {
                     setTimeout(() => {
                         this.activeDroppableIndex = NaN;
                     }, 10);
-                }}
-                key={index}
-            > </div>
+                },
+                key: index,
+            }
         );
+        // return (
+        //     <div
+        //         style={this.droppableStyle}
+        //         draggable={true}
+        //         onDragOver={(e) => {
+        //             e.preventDefault();
+        //             this.activeDroppableIndex = index
+        //         }}
+        //         onDragLeave={() => {
+        //             setTimeout(() => {
+        //                 this.activeDroppableIndex = NaN;
+        //             }, 10);
+        //         }}
+        //         key={index}
+        //     > </div>
+        // );
     }
 
     buildPart(part: ExpressionPart) {
-        return (
-            <Part value={part.value}
-                viewModelProps={this.viewModelProps}
-                type={part.type}
-                id={part.id}
-                key={part.id}
-                removePart={this.removePart.bind(this)}
-                onPartValueChanged={this.onPartValueChanged.bind(this)}
-            />
+        return React.createElement(Part,
+            {
+                value: part.value,
+                viewModelProps: this.viewModelProps,
+                type: part.type,
+                id: part.id,
+                key: part.id,
+                removePart: this.removePart.bind(this),
+                onPartValueChanged: this.onPartValueChanged.bind(this),
+            }
         );
+        // return (
+        //     <Part
+        //         value={part.value}
+        //         viewModelProps={this.viewModelProps}
+        //         type={part.type}
+        //         id={part.id}
+        //         key={part.id}
+        //         removePart={this.removePart.bind(this)}
+        //         onPartValueChanged={this.onPartValueChanged.bind(this)}
+        //     />
+        // );
     }
 
     ///
