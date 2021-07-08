@@ -22,10 +22,10 @@ class App extends React.PureComponent<{}, IAppState> {
   render() {
     return (
       React.createElement('div', { className: 'wrapper' },
-        React.createElement('h1', {}, 'Expression Builder'),
-        React.createElement(ExpressionBuilder, { expression: this.state.expression, viewModel: this.fake, onExpressionChanged: this.onExpressionChanged.bind(this) },),
-        React.createElement('div', {}, this.state.expression),
-        React.createElement('hr', {}),
+        // React.createElement('h1', {}, 'Expression Builder'),
+        // React.createElement(ExpressionBuilder, { expression: this.state.expression, viewModel: this.fake, onExpressionChanged: this.onExpressionChanged.bind(this) },),
+        // React.createElement('div', {}, this.state.expression),
+        // React.createElement('hr', {}),
         React.createElement('h1', {}, 'RouteEditor'),
         React.createElement(RouteEditor, {parts: this._fakes}),
       )
