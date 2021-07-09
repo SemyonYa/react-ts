@@ -14,13 +14,13 @@ export class RouteEditor extends React.PureComponent<IRouteEditorProps> {
 
     render() {
         return (
-            React.createElement('div', {style: {display: 'flex'}},
+            React.createElement('div', { style: { display: 'flex' } },
                 ...React.Children.toArray(this.props.parts.map(part =>
-                        [
-                            React.createElement(RoutePart, { part }),
-                            React.createElement('span', { style: {margin: '0 .5rem'} }, '/')
-                        ]
-                    )
+                    [
+                        React.createElement(RoutePart, { part }),
+                        React.createElement('span', { style: { margin: '0 .5rem' } }, '/')
+                    ]
+                )
                 )
             )
         );
@@ -60,6 +60,7 @@ class RoutePart extends React.PureComponent<IRoutePartProps, IRoutePartState> {
                 ? React.createElement('div', { style: { display: 'flex', flexDirection: 'column' } },
                     React.createElement('div', {},
                         React.createElement('input', { onChange: this.changePartName.bind(this), value: this.state.partName ?? this.props.part.name }),
+                        // TODO
                         React.createElement('span', { onClick: this.toggleEditable.bind(this), style: { cursor: 'pointer' } }, 'x')
                     ),
                     React.createElement('div', {},
@@ -69,6 +70,7 @@ class RoutePart extends React.PureComponent<IRoutePartProps, IRoutePartState> {
                         ),
                     ),
                     this.state.isParam ?? this.props.part.parameter !== undefined ?
+                        // TODO
                         React.createElement('div', { style: { display: 'flex', flexDirection: 'column', border: 'solid 1px #efefef', borderRadius: '4px' } },
                             'PARAM',
                             React.createElement('input', { type: 'number', onChange: this.changeParamType.bind(this), value: this.state.paramType ?? this.props.part.parameter!.parameterType }),
