@@ -12,13 +12,18 @@ interface IRouteEditorProps {
 }
 
 export class RouteEditor extends React.PureComponent<IRouteEditorProps> {
+    parts: RoutePartDTO[];
+    constructor(props: IRouteEditorProps) {
+        super(props);
+        this.parts = props.parts;
+    }
 
     render() {
         return (
             React.createElement('div', { style: { display: 'flex' } },
-                ...React.Children.toArray(this.props.parts.map(part =>
+                ...React.Children.toArray(this.parts.map(part =>
                     [
-                        React.createElement(RoutePart, { part, onChange: () => this.props.onChange.apply(this, [this.props.parts]) }),
+                        React.createElement(RoutePart, { part, onChange: () => this.props.onChange.call(this, this.parts) }),
                         React.createElement('span', { style: { margin: '0 .5rem' } }, '/')
                     ]
                 )
@@ -79,7 +84,7 @@ class RoutePart extends React.PureComponent<IRoutePartProps, IRoutePartState> {
                             React.createElement('input', { type: 'number', onChange: this.changeParamType.bind(this), value: this.state.paramType ?? this.props.part.parameter!.parameterType }),
                             React.createElement('label', {},
                                 React.createElement('input', { type: 'checkbox', onChange: this.changeIsParamRequired.bind(this), checked: this.state.isParamRequired ?? this.props.part.parameter!.isMandatory }),
-                                'isRequired'
+                                'is required'
                             ),
                         ) : null,
                 )
