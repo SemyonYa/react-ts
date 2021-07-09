@@ -22,22 +22,17 @@ class App extends React.PureComponent<{}, IAppState> {
   render() {
     return (
       React.createElement('div', { className: 'wrapper' },
+        // // Expression Builder
         // React.createElement('h1', {}, 'Expression Builder'),
         // React.createElement(ExpressionBuilder, { expression: this.state.expression, viewModel: this.fake, onExpressionChanged: this.onExpressionChanged.bind(this) },),
         // React.createElement('div', {}, this.state.expression),
-        // React.createElement('hr', {}),
+
+
+        // Route Editor
         React.createElement('h1', {}, 'RouteEditor'),
         React.createElement(RouteEditor, { parts: this._fakes, onChange: this.onRouteChange.bind(this) }),
       )
     );
-    // return (
-    //   <div className="wrapper">
-    //     <h1>Expression Builder</h1>
-    //     <ExpressionBuilder expression={this.state.expression} viewModel={this.fake} onExpressionChanged={this.onExpressionChanged.bind(this)} />
-    //     {/* <hr width="100%" /> */}
-    //     <div>{this.state.expression}</div>
-    //   </div>
-    // );
   }
 
   onExpressionChanged(expression: string) {

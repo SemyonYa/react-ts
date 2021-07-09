@@ -1,11 +1,12 @@
 import React from 'react';
-import { operators, types } from './ExpressionBuilder';
+import { ExpressionPart, operators, types } from './ExpressionBuilder';
 
 interface IPartProps {
-    value: any;
     viewModelProps: string[];
-    type: string;
-    id: number;
+    partModel: ExpressionPart;
+    // id: number;
+    // value: any;
+    // type: string;
     removePart(id: number): void;
     onPartValueChanged(id: number, value: any): void;
 }
@@ -22,9 +23,9 @@ export class Part extends React.PureComponent<IPartProps, IPartState> {
         super(props);
         console.log(props);
 
-        this.initialValue = props.value;
+        this.initialValue = props.partModel.value;
         this.state = {
-            value: props.value,
+            value: props.partModel.value,
         };
     }
 
@@ -34,78 +35,44 @@ export class Part extends React.PureComponent<IPartProps, IPartState> {
         });
         if (this.currentTimeout) clearTimeout(this.currentTimeout);
         this.currentTimeout = setTimeout(() => {
-            this.props.onPartValueChanged(this.props.id, this.state.value);
+            this.props.onPartValueChanged(this.props.partModel.id, this.state.value);
         }, 500);
     }
 
     changeSelect(e: React.ChangeEvent<HTMLSelectElement>) {
-        this.props.onPartValueChanged(this.props.id, e.target.value);
+        this.props.onPartValueChanged(this.props.partModel.id, e.target.value);
     }
 
     render() {
-        console.log(this.props.type);
-
         return (
             React.createElement('div', { style: this.wrapStyles },
                 React.createElement('div', { style: this.itemStyles },
                     // FIELDS
-                    (this.props.type === types.part.operatorSelect) ? React.createElement('select', { style: this.inputStyles, onChange: this.changeSelect.bind(this) },
+                    (this.props.partModel.type === types.part.operatorSelect) ? React.createElement('select', { style: this.inputStyles, onChange: this.changeSelect.bind(this) },
                         ...operators.map(o => React.createElement('option', { value: o }, o))
                     ) : null,
-                    (this.props.type === types.part.modelSelect) ? React.createElement('select', { style: this.inputStyles, onChange: this.changeSelect.bind(this) },
+                    (this.props.partModel.type === types.part.modelSelect) ? React.createElement('select', { style: this.inputStyles, onChange: this.changeSelect.bind(this) },
                         ...this.props.viewModelProps.map(p => React.createElement('option', { value: p }, p))
                     ) : null,
-                    (this.props.type === types.part.numInput) ? React.createElement('input', {
+                    (this.props.partModel.type === types.part.numInput) ? React.createElement('input', {
                         style: this.inputStyles,
                         type: 'number',
                         value: this.state.value ?? this.initialValue,
                         onChange: this.changeInput.bind(this)
                     }) : null,
                     // BRACKETS
-                    (this.props.type === types.part.bracketsLeft) ? '(' : null,
-                    (this.props.type === types.part.bracketsRight) ? ')' : null,
+                    (this.props.partModel.type === types.part.bracketsLeft) ? '(' : null,
+                    (this.props.partModel.type === types.part.bracketsRight) ? ')' : null,
                     // REMOVE
-                    React.createElement('div', { style: this.removeStyle, onClick: () => this.props.removePart(this.props.id) }, 'x')
+                    React.createElement('div', { style: this.removeStyle, onClick: () => this.props.removePart(this.props.partModel.id) }, 'x')
                 ),
             )
         );
-        //     <div style={this.wrapStyles}>
-        //         {/* FIELDS */}
-        //         {this.props.type === types.part.operatorSelect &&
-        //             <div style={this.itemStyles}>
-        //                 <select value={this.props.value} style={this.inputStyles} onChange={this.changeSelect.bind(this)}>
-        //                     {operators.map(o =>
-        //                         <option value={o} key={o}>{o}</option>
-        //                     )}
-        //                 </select>
-        //             </div>
-        //         }
-        //         {this.props.type === types.part.modelSelect &&
-        //             <div style={this.itemStyles}>
-        //                 <select value={this.props.value} style={this.inputStyles} onChange={this.changeSelect.bind(this)}>
-        //                     {this.props.viewModelProps.map(p =>
-        //                         <option value={p} key={p}>{p}</option>
-        //                     )}
-        //                 </select>
-        //             </div>
-        //         }
-        //         {this.props.type === types.part.numInput &&
-        //             <div style={this.itemStyles}>
-        //                 <input type='number' value={this.state.value ?? this.initialValue} style={this.inputStyles} onChange={this.changeInput.bind(this)} />
-        //             </div>
-        //         }
-        //         {/* BRACKETS */}
-        //         {this.props.type === types.part.bracketsLeft &&
-        //             <div style={this.itemStyles}>(</div>
-        //         }
-        //         {this.props.type === types.part.bracketsRight &&
-        //             <div style={this.itemStyles}>)</div>
-        //         }
-        //         {/* REMOVE */}
-        //         <div style={this.removeStyle} onClick={() => this.props.removePart(this.props.id)}>&#10006;</div>
-        //     </div>
-        // );
     }
+
+    ///
+    /// Styles
+    ///
 
     wrapStyles: Object = {
         display: 'flex',
