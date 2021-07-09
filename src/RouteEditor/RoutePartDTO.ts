@@ -6,7 +6,7 @@ import { RouteParameterDTO } from './RouteParameterDTO';
 
 export class RoutePartDTO {
 	public name: string;
-	public parameter: RouteParameterDTO;
+	public parameter?: RouteParameterDTO;
 	public childRoutPart?: RoutePartDTO;
 
 	constructor(name: string, parameter: RouteParameterDTO, childRoutPart?: RoutePartDTO) {
