@@ -27,7 +27,7 @@ class App extends React.PureComponent<{}, IAppState> {
         // React.createElement('div', {}, this.state.expression),
         // React.createElement('hr', {}),
         React.createElement('h1', {}, 'RouteEditor'),
-        React.createElement(RouteEditor, {parts: this._fakes}),
+        React.createElement(RouteEditor, { parts: this._fakes, onChange: this.onRouteChange.bind(this) }),
       )
     );
     // return (
@@ -49,12 +49,18 @@ class App extends React.PureComponent<{}, IAppState> {
   // ROUTE EDITOR
   get _fakes(): RoutePartDTO[] {
     return ['qwe', 'rty', 'uio'].map(i =>
-        new RoutePartDTO(
-            i,
-            new RouteParameterDTO(),
-        )
+      new RoutePartDTO(
+        i,
+        new RouteParameterDTO(),
+      )
     );
-}
+  }
+
+  onRouteChange(parts: RoutePartDTO[]) {
+    console.log(parts);
+    console.log(...parts.map(p => { return [p.name, p.parameter?.parameterType, p.parameter?.isMandatory] }));
+
+  }
 
 
 

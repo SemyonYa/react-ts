@@ -7,7 +7,8 @@ import { RoutePartDTO } from "./RoutePartDTO";
 ///
 
 interface IRouteEditorProps {
-    parts: RoutePartDTO[]
+    parts: RoutePartDTO[];
+    onChange(route: RoutePartDTO[]): void;
 }
 
 export class RouteEditor extends React.PureComponent<IRouteEditorProps> {
@@ -17,7 +18,7 @@ export class RouteEditor extends React.PureComponent<IRouteEditorProps> {
             React.createElement('div', { style: { display: 'flex' } },
                 ...React.Children.toArray(this.props.parts.map(part =>
                     [
-                        React.createElement(RoutePart, { part }),
+                        React.createElement(RoutePart, { part, onChange: () => this.props.onChange.apply(this, [this.props.parts]) }),
                         React.createElement('span', { style: { margin: '0 .5rem' } }, '/')
                     ]
                 )
@@ -25,6 +26,7 @@ export class RouteEditor extends React.PureComponent<IRouteEditorProps> {
             )
         );
     }
+
 }
 
 ///
@@ -33,6 +35,7 @@ export class RouteEditor extends React.PureComponent<IRouteEditorProps> {
 
 interface IRoutePartProps {
     part: RoutePartDTO;
+    onChange(): void;
 }
 
 interface IRoutePartState {
@@ -92,23 +95,27 @@ class RoutePart extends React.PureComponent<IRoutePartProps, IRoutePartState> {
         const currentValue = e.target.value;
         this.setState({ partName: currentValue });
         this.props.part.name = currentValue;
+        this.props.onChange();
     }
 
     changeIsParam(e: ChangeEvent<HTMLInputElement>) {
         const currentState: boolean = e.target.checked;
         this.setState({ isParam: currentState });
         this.props.part.parameter = currentState ? new RouteParameterDTO() : undefined;
+        this.props.onChange();
     }
 
     changeParamType(e: ChangeEvent<HTMLInputElement>) {
         const currentValue = +e.target.value;
         this.setState({ paramType: currentValue });
         this.props.part.parameter!.parameterType = currentValue;
+        this.props.onChange();
     }
 
     changeIsParamRequired(e: ChangeEvent<HTMLInputElement>) {
         const currentState: boolean = e.target.checked;
         this.setState({ isParamRequired: currentState });
         this.props.part.parameter!.isMandatory = currentState;
+        this.props.onChange();
     }
 }
