@@ -1,9 +1,9 @@
 import './App.css';
 import React from 'react';
-import ExpressionBuilder from './ExpressionBuilder/ExpressionBuilder';
 import { RouteEditor } from './RouteEditor/RouteEditor';
 import { RoutePartDTO } from './RouteEditor/RoutePartDTO';
 import { RouteParameterDTO } from './RouteEditor/RouteParameterDTO';
+import { ExpressionBuilder } from './ExpressionBuilder/ExpressionBuilder';
 
 interface IAppState {
   expression: string;
@@ -22,15 +22,19 @@ class App extends React.PureComponent<{}, IAppState> {
   render() {
     return (
       React.createElement('div', { className: 'wrapper' },
-        // // Expression Builder
-        // React.createElement('h1', {}, 'Expression Builder'),
-        // React.createElement(ExpressionBuilder, { expression: this.state.expression, viewModel: this.fake, onExpressionChanged: this.onExpressionChanged.bind(this) },),
-        // React.createElement('div', {}, this.state.expression),
+      // // Expression Builder
+      // React.createElement('h1', {}, 'Expression Builder'),
+      // React.createElement(ExpressionBuilder, { expression: this.state.expression, viewModel: this.fake, onExpressionChanged: this.onExpressionChanged.bind(this) },),
+      // React.createElement('div', {}, this.state.expression),
+        // Expression Builder2
+        React.createElement('h1', {}, 'Expression Builder2'),
+        React.createElement(ExpressionBuilder, { expression: this.state.expression, viewModel: this.fake, onExpressionChanged: this.onExpressionChanged.bind(this) },),
+        React.createElement('div', {}, this.state.expression),
 
 
-        // Route Editor
-        React.createElement('h1', {}, 'RouteEditor'),
-        React.createElement(RouteEditor, { parts: this._fakes, onChange: this.onRouteChange.bind(this) }),
+        // // Route Editor
+        // React.createElement('h1', {}, 'RouteEditor'),
+        // React.createElement(RouteEditor, { parts: this._fakes, onChange: this.onRouteChange.bind(this) }),
       )
     );
   }
