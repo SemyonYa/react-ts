@@ -6,8 +6,8 @@ export class RouteParameterDTO {
 	public isMandatory: boolean;
 	public parameterType: number;
 
-	constructor(isMandatory: boolean = true, parameterType: number = 0) {
-		this.isMandatory = isMandatory;
-		this.parameterType = parameterType;
-	}
+	// constructor(isMandatory: boolean = true, parameterType: number = 0) {
+	// 	this.isMandatory = isMandatory;
+	// 	this.parameterType = parameterType;
+	// }
 }

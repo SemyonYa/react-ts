@@ -106,7 +106,7 @@ class RoutePart extends React.PureComponent<IRoutePartProps, IRoutePartState> {
     changeIsParam(e: ChangeEvent<HTMLInputElement>) {
         const currentState: boolean = e.target.checked;
         this.setState({ isParam: currentState });
-        this.props.part.parameter = currentState ? new RouteParameterDTO() : undefined;
+        this.props.part.parameter = currentState ? <RouteParameterDTO>{isMandatory: true, parameterType: 0} : undefined;
         this.props.onChange();
     }
 
