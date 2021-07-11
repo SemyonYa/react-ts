@@ -26,12 +26,12 @@ class App extends React.PureComponent<{}, IAppState> {
       // Route Editor
       React.createElement("h1", {}, "RouteEditor"),
       React.createElement(RouteEditor, {
-        parts: this._fakes,
+        route: this._fakes2,
         onChange: this.onRouteChange.bind(this),
       }),
 
       // Expression Builder
-      React.createElement("h1", {}, "Expression Builder2"),
+      React.createElement("h1", {}, "Expression Builder"),
       React.createElement(ExpressionBuilder, {
         expression: this.state.expression,
         viewModel: this.fake,
@@ -50,35 +50,39 @@ class App extends React.PureComponent<{}, IAppState> {
   // ROUTE EDITOR
   get _fakes(): RoutePartDTO[] {
     return ["qwe", "rty", "uio"].map((i) => {
-      let route = <RoutePartDTO>{
+      let route = {
         name: i,
-        parameter: <RouteParameterDTO>{ isMandatory: true, parameterType: 0 },
-      };
+        parameter: { isMandatory: true, parameterType: 0 } as RouteParameterDTO,
+      } as RoutePartDTO;
       return route;
     });
   }
+
   get _fakes2(): RoutePartDTO {
-    return <RoutePartDTO>{
+    return {
       name: "qwe",
-      parameter: <RouteParameterDTO>{ isMandatory: true, parameterType: 0 },
-      childRoutPart: <RoutePartDTO>{
+      parameter: { isMandatory: true, parameterType: 0 } as RouteParameterDTO,
+      childRoutPart: {
         name: "rty",
-        parameter: <RouteParameterDTO>{ isMandatory: true, parameterType: 0 },
-        childRoutPart: <RoutePartDTO>{
+        parameter: { isMandatory: true, parameterType: 0 } as RouteParameterDTO,
+        childRoutPart: {
           name: "tuy",
-          parameter: <RouteParameterDTO>{ isMandatory: true, parameterType: 0 },
-        },
-      },
-    };
+          parameter: {
+            isMandatory: true,
+            parameterType: 0,
+          } as RouteParameterDTO,
+        } as RoutePartDTO,
+      } as RoutePartDTO,
+    } as RoutePartDTO;
   }
 
-  onRouteChange(parts: RoutePartDTO[]) {
+  onRouteChange(parts: RoutePartDTO) {
     console.log(parts);
-    console.log(
-      ...parts.map((p) => {
-        return [p.name, p.parameter?.parameterType, p.parameter?.isMandatory];
-      })
-    );
+    // console.log(
+    //   ...parts.map((p) => {
+    //     return [p.name, p.parameter?.parameterType, p.parameter?.isMandatory];
+    //   })
+    // );
   }
 }
 
