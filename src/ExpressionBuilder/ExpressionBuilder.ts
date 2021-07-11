@@ -85,7 +85,7 @@ export class ExpressionBuilder extends React.PureComponent<IExpressionBuilderPro
         });
     }
 
-    addParts() {
+    addParts(): void {
         if (this.activeDraggable && this.activeDroppableIndex !== undefined) {
             if (this.activeDraggable === types.draggable.brackets) {
                 this.parts = [
@@ -132,14 +132,13 @@ export class ExpressionBuilder extends React.PureComponent<IExpressionBuilderPro
         this.activeDroppableIndex = undefined;
     }
 
-    onPartValueChanged() {
-        console.log(this.parts.map(p => p.value));
+    onPartValueChanged(): void {
         this.props.onExpressionChanged(
             this.partsToString()
         );
     }
 
-    removePart(part: ExpressionPart) {
+    removePart(part: ExpressionPart): void {
         this.parts = this.parts.filter(p => p !== part);
         this.props.onExpressionChanged(
             this.partsToString()
@@ -186,7 +185,7 @@ export class ExpressionBuilder extends React.PureComponent<IExpressionBuilderPro
         return React.createElement(
             'div',
             {
-                style: {minWidth: '4rem', margin: '0 4px', display: 'flex'},
+                style: {width: '4rem', margin: '0 4px', display: 'flex'},
                 draggable: true,
                 onDragStart: () => { this.activeDraggable = draggableType },
                 onDragEnd: this.addParts.bind(this),
@@ -195,12 +194,12 @@ export class ExpressionBuilder extends React.PureComponent<IExpressionBuilderPro
         );
     }
 
-    buildDroppable(index: number) {
+    buildDroppable(index: number): React.ReactNode {
         return React.createElement('div',
             {
                 style: { width: '.5rem',borderRadius: '4px',border: 'solid 1px #efefef',margin: '0 4px' },
                 draggable: true,
-                onDragOver: (e) => {
+                onDragOver: (e: DragEvent) => {
                     e.preventDefault();
                     this.activeDroppableIndex = index
                 },
@@ -213,8 +212,8 @@ export class ExpressionBuilder extends React.PureComponent<IExpressionBuilderPro
         );
     }
 
-    buildPart(part: ExpressionPart) {
-        return React.createElement(Part2, {
+    buildPart(part: ExpressionPart): React.ReactNode {
+        return React.createElement(Part, {
             partModel: part, 
             viewModelProps: this.viewModelProps, 
             onRemove: () => this.removePart.bind(this)(part),
@@ -238,7 +237,7 @@ interface IPartState {
     value?: string | number
 }
 
-class Part2 extends React.PureComponent<IPartProps, IPartState> {
+class Part extends React.PureComponent<IPartProps, IPartState> {
     currentTimeout: any;
     initialValue?: number;
 
@@ -251,7 +250,7 @@ class Part2 extends React.PureComponent<IPartProps, IPartState> {
         };
     }
 
-    changeInput(e: React.ChangeEvent<HTMLInputElement>) {
+    changeInput(e: React.ChangeEvent<HTMLInputElement>): void {
         const currentValue: number = +e.target.value;
         this.setState({
             value: currentValue
@@ -263,7 +262,7 @@ class Part2 extends React.PureComponent<IPartProps, IPartState> {
         }, 500);
     }
     
-    changeSelect(e: React.ChangeEvent<HTMLSelectElement>) {
+    changeSelect(e: React.ChangeEvent<HTMLSelectElement>): void {
         this.props.partModel.value = e.target.value;
         this.props.onPartValueChanged();
     }
@@ -291,7 +290,7 @@ class Part2 extends React.PureComponent<IPartProps, IPartState> {
                     (this.props.partModel.type === types.part.bracketsLeft) ? '(' : null,
                     (this.props.partModel.type === types.part.bracketsRight) ? ')' : null,
                     // REMOVE
-                    React.createElement('div', { onClick: () => this.props.onRemove() }, 'x')
+                    React.createElement('span', { onClick: () => this.props.onRemove() }, 'x')
                 ),
             )
         );
