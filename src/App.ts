@@ -3,7 +3,7 @@ import React from 'react';
 import { RouteEditor } from './RouteEditor/RouteEditor';
 import { RoutePartDTO } from './RouteEditor/RoutePartDTO';
 import { RouteParameterDTO } from './RouteEditor/RouteParameterDTO';
-import { ExpressionBuilder } from './ExpressionBuilder/ExpressionBuilder';
+import { ExpressionBuilder } from './components/ExpressionBuilder';
 
 interface IAppState {
   expression: string;
