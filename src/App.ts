@@ -1,8 +1,8 @@
 import "./App.css";
 import React from "react";
-import { RouteEditor } from "./RouteEditor/RouteEditor";
-import { RoutePartDTO } from "./RouteEditor/RoutePartDTO";
-import { RouteParameterDTO } from "./RouteEditor/RouteParameterDTO";
+import { RouteEditor } from "./components/RouteEditor";
+import { RoutePartDTO } from "./models/RoutePartDTO";
+import { RouteParameterDTO } from "./models/RouteParameterDTO";
 import { ExpressionBuilder } from "./components/ExpressionBuilder";
 
 interface IAppState {

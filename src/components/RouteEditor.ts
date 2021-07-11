@@ -1,6 +1,6 @@
-import React, { ChangeEvent } from "react";
-import { RouteParameterDTO } from "./RouteParameterDTO";
-import { RoutePartDTO } from "./RoutePartDTO";
+import React, { ChangeEvent } from 'react';
+import { RouteParameterDTO } from '../models/RouteParameterDTO';
+import { RoutePartDTO } from '../models/RoutePartDTO';
 
 ///
 /// EDITOR
@@ -19,12 +19,12 @@ export class RouteEditor extends React.PureComponent<IRouteEditorProps> {
   }
 
   render() {
-    return React.createElement("div", { style: { display: "flex" } },
+    return React.createElement('div', { style: { display: 'flex' } },
       ...React.Children.toArray(
         this.parts.map((part) =>
           [
             React.createElement(RoutePart, { part, onChange: () => this.props.onChange.call(this, this.props.route), }),
-            React.createElement("span", { style: { margin: "0 .5rem" } }, "/"),
+            React.createElement('span', { style: { margin: '0 .5rem' } }, '/'),
           ]
         )
       )
@@ -66,30 +66,30 @@ class RoutePart extends React.PureComponent<IRoutePartProps, IRoutePartState> {
   }
 
   render() {
-    return React.createElement("div", {},
+    return React.createElement('div', {},
       this.state.isEditable ?
-        React.createElement("div", { style: { display: "flex", flexDirection: "column" } },
-          React.createElement("div", {},
-            React.createElement("input", { onChange: this.changePartName.bind(this), value: this.state.partName ?? this.props.part.name }),
-            React.createElement("span", { onClick: this.toggleEditable.bind(this) }, "v")
+        React.createElement('div', { style: { display: 'flex', flexDirection: 'column' } },
+          React.createElement('div', {},
+            React.createElement('input', { onChange: this.changePartName.bind(this), value: this.state.partName ?? this.props.part.name }),
+            React.createElement('span', { onClick: this.toggleEditable.bind(this) }, 'v')
           ),
-          React.createElement("div", {},
-            React.createElement("label", {},
-              React.createElement("input", { type: "checkbox", onChange: this.changeIsParam.bind(this), checked: this.state.isParam ?? this.props.part.parameter !== undefined }),
-              "is param"
+          React.createElement('div', {},
+            React.createElement('label', {},
+              React.createElement('input', { type: 'checkbox', onChange: this.changeIsParam.bind(this), checked: this.state.isParam ?? this.props.part.parameter !== undefined }),
+              'is param'
             )
-          ),
+          ), 
           this.state.isParam ?? this.props.part.parameter !== undefined ?
-            React.createElement("div", { style: { display: "flex", flexDirection: "column" } },
-              "PARAM",
-              React.createElement("input", { type: "number", onChange: this.changeParamType.bind(this), value: this.state.paramType ?? this.props.part.parameter!.parameterType, }),
-              React.createElement("label", {},
-                React.createElement("input", { type: "checkbox", onChange: this.changeIsParamRequired.bind(this), checked: this.state.isParamRequired ?? this.props.part.parameter!.isMandatory }),
-                "is required"
+            React.createElement('div', { style: { display: 'flex', flexDirection: 'column' } },
+              'PARAM',
+              React.createElement('input', { type: 'number', onChange: this.changeParamType.bind(this), value: this.state.paramType ?? this.props.part.parameter!.parameterType, }),
+              React.createElement('label', {},
+                React.createElement('input', { type: 'checkbox', onChange: this.changeIsParamRequired.bind(this), checked: this.state.isParamRequired ?? this.props.part.parameter!.isMandatory }),
+                'is required'
               )
             ) : null
         )
-        : React.createElement("span", { onClick: this.toggleEditable.bind(this) }, this.props.part.name)
+        : React.createElement('span', { onClick: this.toggleEditable.bind(this) }, this.props.part.name)
     );
   }
 
