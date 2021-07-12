@@ -19,19 +19,23 @@ export class RouteEditor extends React.PureComponent<IRouteEditorProps> {
   }
 
   render() {
-    return React.createElement('div', { style: { display: 'flex' } },
-      ...React.Children.toArray(
-        this.parts.map((part) =>
+    return (
+      React.createElement('div', { style: { display: 'flex' } },
+        ...React.Children.toArray(this.parts.map((part) =>
           [
-            React.createElement(RoutePart, { part, onChange: () => this.props.onChange.call(this, this.props.route), }),
+            React.createElement(RoutePart, { part, onChange: this.onRoutePartChange }),
             React.createElement('span', { style: { margin: '0 .5rem' } }, '/'),
           ]
-        )
+        ))
       )
     );
   }
 
-  treeToArray(part: RoutePartDTO) {
+  private onRoutePartChange = () => {
+    this.props.onChange(this.props.route);
+  }
+
+  private treeToArray(part: RoutePartDTO): void {
     this.parts.push(part);
     if (part.childRoutPart) this.treeToArray(part.childRoutPart);
   }
@@ -48,10 +52,10 @@ interface IRoutePartProps {
 
 interface IRoutePartState {
   isEditable: boolean;
-  partName?: string;
-  isParam?: boolean;
-  paramType?: number;
-  isParamRequired?: boolean;
+  partName: string;
+  isParam: boolean;
+  paramType: number;
+  isParamRequired: boolean;
 }
 
 class RoutePart extends React.PureComponent<IRoutePartProps, IRoutePartState> {
@@ -59,9 +63,10 @@ class RoutePart extends React.PureComponent<IRoutePartProps, IRoutePartState> {
     super(props);
     this.state = {
       isEditable: false,
-      partName: undefined,
-      isParam: undefined,
-      isParamRequired: undefined,
+      partName: null,
+      isParam: null,
+      isParamRequired: null,
+      paramType: null
     };
   }
 
@@ -78,7 +83,7 @@ class RoutePart extends React.PureComponent<IRoutePartProps, IRoutePartState> {
               React.createElement('input', { type: 'checkbox', onChange: this.changeIsParam.bind(this), checked: this.state.isParam ?? this.props.part.parameter !== undefined }),
               'is param'
             )
-          ), 
+          ),
           this.state.isParam ?? this.props.part.parameter !== undefined ?
             React.createElement('div', { style: { display: 'flex', flexDirection: 'column' } },
               'PARAM',
