@@ -6,4 +6,6 @@ export class MenuItemDTO
 {
 	public pageId: any;
 	public text: string;
+
+	public children: MenuItemDTO[];
 }

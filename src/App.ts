@@ -24,7 +24,21 @@ export class App extends React.PureComponent<{}, IAppState> {
   }
 
   render() {
-    return React.createElement(AdminTemplate, this._layoutProps);
+    return React.createElement(AdminTemplate, this._layoutProps,
+      // ROUTE EDITOR
+      React.createElement('h1', {}, 'RouteEditor'),
+      React.createElement(RouteEditor, {
+        route: this._fakes,
+        onChange: this.onRouteChange.bind(this),
+      }),
+
+      // EXPRESSION BUILDER
+      React.createElement('h1', {}, 'Expression Builder'),
+      React.createElement(ExpressionBuilder, { expression: this.state.expression, viewModel: this.fake, onExpressionChanged: this.onExpressionChanged.bind(this), }),
+      React.createElement('div', {}, this.state.expression)
+    );
+
+    
     // return React.createElement('div', { className: 'wrapper' },
     //   // ROUTE EDITOR
     //   React.createElement('h1', {}, 'RouteEditor'),

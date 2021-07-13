@@ -1,9 +1,9 @@
 import React from "react";
 import { MenuItemDTO } from "./MenuItemDTO";
+import { MenuStore } from "./MenuStore";
 
 interface IMenuProps {
-    items: MenuItemDTO[];
-    isShown: boolean;
+    menuStore: MenuStore;
     hide(): void
 }
 
@@ -12,21 +12,85 @@ interface IMenuState {
 }
 
 enum FetchStatus {
-    Initial,
-    InProgpress,
+    // Initial,
+    InProgress,
     Fetched,
     Failed
 }
 
-export class Menu extends React.PureComponent<IMenuProps, IMenuState> {
+export class Menu extends React.Component<IMenuProps, IMenuState> {
+
+    private mounted: boolean;
+    private itemsAsTree: { menuItem: MenuItemDTO, level: number }[] = [];
+
+    constructor(props: IMenuProps) {
+        super(props);
+        this.state = { status: null }
+    }
+
+    componentDidMount() {
+        this.fetchMenuItems();
+        this.mounted = true;
+    }
+
+    componentWillUnmount() {
+        this.mounted = false;
+    }
+
     render() {
+        let stateComponent;
+        switch (this.state.status) {
+            case FetchStatus.InProgress:
+                stateComponent = 'inProgress';
+                break;
+            case FetchStatus.Fetched:
+                stateComponent = React.createElement('div', {},
+                    ...React.Children.toArray(this.itemsAsTree.map((i) =>
+                        React.createElement('div', { onClick: this.props.hide, style: { marginLeft: `${i.level}rem` } }, `${i.menuItem.text} (level ${i.level})`)
+                    ))
+                )
+                break;
+            case FetchStatus.Failed:
+                stateComponent = 'failed';
+                break;
+            default:
+                stateComponent = null
+                break;
+        }
         return (
             React.createElement('div', { style: this.menuStyle },
-                ...React.Children.toArray(this.props.items.map((item) =>
-                    React.createElement('div', { onClick: this.props.hide }, `${item.pageId} - ${item.text}`)
-                ))
+                stateComponent
             )
         );
+    }
+
+    fetchMenuItems = () => {
+        this.setState({ status: FetchStatus.InProgress });
+        // TODO: replace method
+        this.props.menuStore._items(123123)
+            .then(
+                (items) => {
+                    this.buildItemsAsTtee(items)
+                    if (this.mounted)
+                        this.setState({ status: FetchStatus.Fetched })
+
+                },
+                (reason) => {
+                    console.log(reason);
+                    if (this.mounted)
+                        this.setState({ status: FetchStatus.Failed })
+                }
+            );
+    }
+
+    buildItemsAsTtee(items: MenuItemDTO[], level: number = 0) {
+        for (let item of items) {
+            this.itemsAsTree.push({ menuItem: item, level: level });
+            if (item.children && item.children.length > 0) {
+                this.buildItemsAsTtee(item.children, level + 1);
+            }
+        }
+
     }
 
     get menuStyle() {
@@ -35,11 +99,7 @@ export class Menu extends React.PureComponent<IMenuProps, IMenuState> {
             top: 0,
             bottom: 0,
             left: 0,
-            width: '40vw',
-            transition: '1s',
             backgroundColor: 'rgba(255,255,255,.85)',
-            border: 'solid 1px green',
-            transform: this.props.isShown ? 'translateX(0)' : 'translateX(-100%)'
         };
     }
 }

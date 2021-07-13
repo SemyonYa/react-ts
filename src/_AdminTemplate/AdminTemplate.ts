@@ -2,7 +2,6 @@ import * as React from 'react';
 import { ILayoutProps } from './ILayoutProps';
 import { Menu } from './Menu';
 import img from './menu.svg';
-import { MenuItemDTO } from './MenuItemDTO';
 
 interface IAdminTemplateState {
     menuShown: boolean;
@@ -23,23 +22,17 @@ export class AdminTemplate extends React.PureComponent<ILayoutProps, IAdminTempl
             React.createElement('div', { style: this.styles.root },
                 React.createElement('div', { style: this.styles.header },
                     React.createElement('img', { src: img, onClick: this.showMenu, style: this.styles.headerImg }),
-                    React.createElement('span', {}, 'AppBar'),
+                    React.createElement('span', {}, 'Page #' + this.props.pageId),
                 ),
-                React.createElement('div', { onClick: this.hideMenu, style: this.styles.body },
-                    'Page with ID ' + this.props.pageId
+                React.createElement('div', { style: this.styles.body },
+                    this.props.children
                 ),
-                React.createElement(
-                    Menu,
-                    {
-                        items: [
-                            { pageId: 1, text: 'first' } as MenuItemDTO,
-                            { pageId: 2, text: 'second' } as MenuItemDTO,
-                            { pageId: 3, text: 'third' } as MenuItemDTO,
-                        ],
-                        isShown: this.state.menuShown,
-                        hide: this.hideMenu
-                    }
-                )
+                this.state.menuShown ? React.createElement(
+                    'div', { onClick: this.hideMenu, style: this.styles.menuBack }
+                ) : null,
+                this.state.menuShown ?
+                    React.createElement(Menu, { menuStore: this.props.menuStore, hide: this.hideMenu }
+                    ) : null
             )
         );
     }
@@ -80,6 +73,13 @@ export class AdminTemplate extends React.PureComponent<ILayoutProps, IAdminTempl
                 minHeight: '100vh',
                 border: 'solid 2px darkred',
                 padding: '4.5rem'
+            },
+            menuBack: {
+                position: 'fixed',
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: 0,
             }
         };
     }
