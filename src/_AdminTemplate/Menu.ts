@@ -1,9 +1,9 @@
 import React from "react";
+import { ILayoutProps } from "./ILayoutProps";
 import { MenuItemDTO } from "./MenuItemDTO";
-import { MenuStore } from "./MenuStore";
 
 interface IMenuProps {
-    menuStore: MenuStore;
+    layoutProps: ILayoutProps;
     hide(): void
 }
 
@@ -12,7 +12,6 @@ interface IMenuState {
 }
 
 enum FetchStatus {
-    // Initial,
     InProgress,
     Fetched,
     Failed
@@ -67,7 +66,7 @@ export class Menu extends React.Component<IMenuProps, IMenuState> {
     fetchMenuItems = () => {
         this.setState({ status: FetchStatus.InProgress });
         // TODO: replace method
-        this.props.menuStore._items(123123)
+        this.props.layoutProps.menuStore._items(this.props.layoutProps.pageId)
             .then(
                 (items) => {
                     this.buildItemsAsTtee(items)
@@ -99,7 +98,6 @@ export class Menu extends React.Component<IMenuProps, IMenuState> {
             top: 0,
             bottom: 0,
             left: 0,
-            backgroundColor: 'rgba(255,255,255,.85)',
         };
     }
 }
