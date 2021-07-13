@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { ILayoutProps } from './ILayoutProps';
-import img from './menu.svg';
-import { MenuItemDTO } from './MenuItemDTO';
+import { ILayoutProps } from '../models/ILayoutProps';
+import img from '../assets/menu.svg';
+import { MenuItemDTO } from '../models/MenuItemDTO';
 
 ///
-/// TEMPLATE
+/// ADMIN TEMPLATE
 ///
 
 interface IAdminTemplateState {

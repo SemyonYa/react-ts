@@ -5,9 +5,9 @@ import { RoutePartDTO } from './models/RoutePartDTO';
 import { RouteParameterDTO } from './models/RouteParameterDTO';
 import { ExpressionBuilder } from './components/ExpressionBuilder';
 import { Fake } from './models/Fake';
-import { AdminTemplate } from './_AdminTemplate/AdminTemplate';
-import { ILayoutProps } from './_AdminTemplate/ILayoutProps';
-import { MenuStore } from './_AdminTemplate/MenuStore';
+import { AdminTemplate } from './components/AdminTemplate';
+import { ILayoutProps } from './models/ILayoutProps';
+import { MenuStore } from './models/MenuStore';
 
 interface IAppState {
   expression: string;
@@ -24,6 +24,7 @@ export class App extends React.PureComponent<{}, IAppState> {
   }
 
   render() {
+    // ADMIN TEMPLATE
     return React.createElement(AdminTemplate, this._layoutProps,
       // ROUTE EDITOR
       React.createElement('h1', {}, 'RouteEditor'),
@@ -38,7 +39,7 @@ export class App extends React.PureComponent<{}, IAppState> {
       React.createElement('div', {}, this.state.expression)
     );
 
-    
+
     // return React.createElement('div', { className: 'wrapper' },
     //   // ROUTE EDITOR
     //   React.createElement('h1', {}, 'RouteEditor'),
