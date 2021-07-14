@@ -8,9 +8,11 @@ import { Fake } from './models/Fake';
 import { AdminTemplate } from './components/AdminTemplate';
 import { ILayoutProps } from './models/ILayoutProps';
 import { MenuStore } from './models/MenuStore';
+import { RouteViewer } from './_RouteViewer/RouteViewer';
 
 interface IAppState {
   expression: string;
+  pageNumber: number;
 }
 
 export class App extends React.PureComponent<{}, IAppState> {
@@ -20,6 +22,7 @@ export class App extends React.PureComponent<{}, IAppState> {
     this.fake = new Fake();
     this.state = {
       expression: '( 1 + age ) > 34',
+      pageNumber: 1
     };
   }
 
@@ -36,7 +39,11 @@ export class App extends React.PureComponent<{}, IAppState> {
       // EXPRESSION BUILDER
       React.createElement('h1', {}, 'Expression Builder'),
       React.createElement(ExpressionBuilder, { expression: this.state.expression, viewModel: this.fake, onExpressionChanged: this.onExpressionChanged.bind(this), }),
-      React.createElement('div', {}, this.state.expression)
+      React.createElement('div', {}, this.state.expression),
+
+      // ROUTE VIEW
+      React.createElement(RouteViewer, { sectionComponentConfiguration: null })
+      // React.createElement(Pagination, { onChange: this.changePage, pageQty: 10, pageNumber: this.state.pageNumber })
     );
 
 
@@ -54,6 +61,11 @@ export class App extends React.PureComponent<{}, IAppState> {
     //   React.createElement('div', {}, this.state.expression)
     // );
   }
+
+  // ROUTE VIEW
+  // changePage = (page: number) => {
+  //   this.setState({ pageNumber: page })
+  // }
 
   // ADMIN TEMPLATE
   get _layoutProps(): ILayoutProps {
