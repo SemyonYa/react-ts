@@ -1,12 +1,11 @@
 import React from 'react';
+import * as axios from 'axios';
 import { ISectionProps } from './ISectionProps';
 import { Item } from './Item';
 import { Pagination } from './Pagination';
 import { RoutePartDetailsDTO } from './RoutePartDetailsDTO';
 
-
 export enum FetchStatus {
-    Initial,
     InProgress,
     Fetched,
     Failed
@@ -22,6 +21,8 @@ interface IRouterViewState {
 
 export class RouteViewer extends React.PureComponent<ISectionProps, IRouterViewState> {
     currentTimeout: any;
+    // TODO: baseUrl
+    baseUrl: string = 'qweqwe';
 
     constructor(props: ISectionProps) {
         super(props);
@@ -35,51 +36,62 @@ export class RouteViewer extends React.PureComponent<ISectionProps, IRouterViewS
     }
 
     componentDidMount() {
-        this.fetchRoutes();
+        this.fetchRoots();
     }
+
+    // // DATA
+    // private getRoots(): Promise<RoutePartDetailsDTO[]> {
+    //     return new Promise<RoutePartDetailsDTO[]>((resolve, reject) => {
+    //         axios.default.get<RoutePartDetailsDTO[]>(this.baseUrl + `/api/Configuration/Routes/search/${currentValue?.trim()}`)
+
+    //     })
+    // }
 
     private changePage = (page: number) => {
-        // TODO: 
         this.setState({ pageNumber: page })
-        this.fetchRoutes(page);
+        this.fetchRoots(page);
     }
 
+    // TODO: rebuild children
     private onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const currentValue: string = e.target.value;
         this.setState({ searchValue: currentValue });
         if (this.currentTimeout) clearTimeout(this.currentTimeout);
-        this.currentTimeout = setTimeout(() => {
-            this.setState({ status: FetchStatus.InProgress });
-            // TODO: /api/Configuration/Routes/search/{searchText}
-            this._search(currentValue?.trim()).then(
-                routes => {
-                    this.setState({ routes, pageNumber: 1, status: FetchStatus.Fetched })
-                }
-            );
-        }, 500);
+        if (currentValue?.trim()) {
+            this.currentTimeout = setTimeout(() => {
+                this.setState({ status: FetchStatus.InProgress });
+                // TODO: remove
+                this._search(currentValue?.trim())
+                    // axios.default.get<RoutePartDetailsDTO[]>(this.baseUrl + `/api/Configuration/Routes/search/${currentValue?.trim()}`)
+                    .then(response => {
+                        console.log("🚀 ~ file: RouteViewer.ts ~ line 67 ~ RouteViewer ~ this.currentTimeout=setTimeout ~ response", response)
+                        this.setState({ routes: response, pageNumber: 1, status: FetchStatus.Fetched });
+                        this.forceUpdate();
+                    });
+            }, 500);
+        }
     }
 
     private onPageSizeSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.code === 'Enter' || e.code === 'NumpadEnter') {
             const currentValue: number = +e.currentTarget.value;
             this.setState({ pageSize: currentValue });
-            this.fetchRoutes(1);
+            this.fetchRoots(1);
         }
     }
 
-    private fetchRoutes = (pageNumber: number = null) => {
-        // TODO: fetch states
+    private fetchRoots = (pageNumber: number = null) => {
         this.setState({ status: FetchStatus.InProgress });
-        // TODO: /api/Configuration/Routes?pageNumber={pageNumber}&pageSize={pageSize
-        this._list(pageNumber ?? this.state.pageNumber, this.state.pageSize).then(
-            (routes) => {
-                this.setState({ routes, status: FetchStatus.Fetched })
-            }
-        );
+        // TODO: remove
+        this._list(pageNumber ?? this.state.pageNumber, this.state.pageSize)
+            // axios.default.get<RoutePartDetailsDTO[]>(this.baseUrl + `/api/Configuration/Routes?pageNumber=${pageNumber}&pageSize=${this.state.pageSize}`)
+            .then((response) => {
+                this.setState({ routes: response, status: FetchStatus.Fetched })
+            });
     }
 
     render() {
-        let component;
+        let component: React.ReactNode;
         switch (this.state.status) {
             case FetchStatus.InProgress:
                 component = React.createElement('span', {}, 'in progress');
@@ -87,7 +99,7 @@ export class RouteViewer extends React.PureComponent<ISectionProps, IRouterViewS
             case FetchStatus.Fetched:
                 component = this.state.routes.length > 0
                     ? React.Children.toArray(this.state.routes.map(route =>
-                        React.createElement(Item, { route }),
+                        React.createElement(Item, { route, baseUrl: this.baseUrl }),
                     ))
                     : React.createElement('span', {}, 'empty list');
                 break;
@@ -127,7 +139,7 @@ export class RouteViewer extends React.PureComponent<ISectionProps, IRouterViewS
                     { id: '2', name: 'Route 2', isPage: false, children: [] } as RoutePartDetailsDTO,
                     { id: '3', name: 'Route 3', isPage: false, children: [] } as RoutePartDetailsDTO,
                 ]);
-            }, 2000);
+            }, 700);
         })
     }
 
@@ -151,7 +163,7 @@ export class RouteViewer extends React.PureComponent<ISectionProps, IRouterViewS
                     } as RoutePartDetailsDTO,
                     { id: '3', name: `${search} - top level`, isPage: false, children: [] } as RoutePartDetailsDTO,
                 ]);
-            }, 2000);
+            }, 700);
         })
     }
 }
