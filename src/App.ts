@@ -8,7 +8,7 @@ import { Fake } from './models/Fake';
 import { AdminTemplate } from './components/AdminTemplate';
 import { ILayoutProps } from './models/ILayoutProps';
 import { MenuStore } from './models/MenuStore';
-import { RouteViewer } from './_RouteViewer/RouteViewer';
+import { RouteViewer } from './components/RouteViewer';
 
 interface IAppState {
   expression: string;
