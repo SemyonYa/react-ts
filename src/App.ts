@@ -1,14 +1,15 @@
 import './App.css';
 import React from 'react';
-import { RouteEditor } from './components/RouteEditor';
+// import { RouteEditor } from './components/RouteEditor';
 import { RoutePartDTO } from './models/RoutePartDTO';
 import { RouteParameterDTO } from './models/RouteParameterDTO';
-import { ExpressionBuilder } from './components/ExpressionBuilder';
+// import { ExpressionBuilder } from './components/ExpressionBuilder';
 import { Fake } from './models/Fake';
-import { AdminTemplate } from './components/AdminTemplate';
+// import { AdminTemplate } from './components/AdminTemplate';
 import { ILayoutProps } from './models/ILayoutProps';
 import { MenuStore } from './models/MenuStore';
-import { RouteViewer } from './components/RouteViewer';
+// import { RouteViewer } from './components/RouteViewer';
+import { MainMenu } from './_MainMenu/MainMenu';
 
 interface IAppState {
   expression: string;
@@ -27,24 +28,31 @@ export class App extends React.PureComponent<{}, IAppState> {
   }
 
   render() {
-    // ADMIN TEMPLATE
-    return React.createElement(AdminTemplate, this._layoutProps,
-      // ROUTE EDITOR
-      React.createElement('h1', {}, 'RouteEditor'),
-      React.createElement(RouteEditor, {
-        route: this._fakes,
-        onChange: this.onRouteChange.bind(this),
-      }),
 
-      // EXPRESSION BUILDER
-      React.createElement('h1', {}, 'Expression Builder'),
-      React.createElement(ExpressionBuilder, { expression: this.state.expression, viewModel: this.fake, onExpressionChanged: this.onExpressionChanged.bind(this), }),
-      React.createElement('div', {}, this.state.expression),
-
-      // ROUTE VIEW
-      React.createElement(RouteViewer, { sectionComponentConfiguration: null })
-      // React.createElement(Pagination, { onChange: this.changePage, pageQty: 10, pageNumber: this.state.pageNumber })
+    // MAIN MENU
+    return (
+      React.createElement(MainMenu, { isAdmin: true })
     );
+
+    // // ADMIN TEMPLATE
+    // return React.createElement(AdminTemplate, this._layoutProps,
+
+    //   // ROUTE EDITOR
+    //   React.createElement('h1', {}, 'RouteEditor'),
+    //   React.createElement(RouteEditor, {
+    //     route: this._fakes,
+    //     onChange: this.onRouteChange.bind(this),
+    //   }),
+
+    //   // EXPRESSION BUILDER
+    //   React.createElement('h1', {}, 'Expression Builder'),
+    //   React.createElement(ExpressionBuilder, { expression: this.state.expression, viewModel: this.fake, onExpressionChanged: this.onExpressionChanged.bind(this), }),
+    //   React.createElement('div', {}, this.state.expression),
+
+    //   // ROUTE VIEW
+    //   React.createElement(RouteViewer, { sectionComponentConfiguration: null })
+    //   // React.createElement(Pagination, { onChange: this.changePage, pageQty: 10, pageNumber: this.state.pageNumber })
+    // );
 
 
     // return React.createElement('div', { className: 'wrapper' },
