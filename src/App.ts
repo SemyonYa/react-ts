@@ -9,7 +9,7 @@ import { Fake } from './models/Fake';
 import { ILayoutProps } from './models/ILayoutProps';
 import { MenuStore } from './models/MenuStore';
 // import { RouteViewer } from './components/RouteViewer';
-import { MainMenu } from './_MainMenu/MainMenu';
+import { MainMenu } from './components/MainMenu';
 
 interface IAppState {
   expression: string;
