@@ -2,11 +2,6 @@ import * as axios from 'axios';
 import React from 'react';
 import { MenuItemDTO } from '../models/MenuItemDTO2';
 
-///
-/// Параметр isLink
-/// Изменение родительского элемента: модальное окно (нужно динамически подгружать children)
-///
-
 export enum FetchStatus {
     InProgress,
     Fetched,
@@ -82,10 +77,10 @@ export class MainMenu extends React.PureComponent<IMainMenuProps, IMainMenuState
 
     private fetch = () => {
         this.setState({ status: FetchStatus.InProgress });
-        // axios.default.get(this.baseUrl + '/api/Configuration/Menu')
-        this._roots()
+        axios.default.get(this.baseUrl + '/api/Configuration/Menu')
+            // this._roots()
             .then(
-                roots => this.setState({ roots: roots.sort((r1, r2) => r1.orderIndex - r2.orderIndex), status: FetchStatus.Fetched }),
+                roots => this.setState({ roots: roots.data.sort((r1, r2) => r1.orderIndex - r2.orderIndex), status: FetchStatus.Fetched }),
                 reason => this.setState({ status: FetchStatus.Failed })
             );
     }
@@ -129,7 +124,7 @@ export class MainMenuItem extends React.PureComponent<IMainMenuItemProps, IMainM
 
     }
 
-    private onClick = () => {
+    private showChildren = () => {
         if (this.props.model.internalPageId || this.props.model.externalUrl) {
             let location = this.props.model.internalPageId ? this.props.baseUrl + '/go/to/page/' + this.props.model.internalPageId : this.props.model.externalUrl;
             if (this.props.model.parametersObjectJson) {
@@ -139,11 +134,14 @@ export class MainMenuItem extends React.PureComponent<IMainMenuItemProps, IMainM
                     location += `${item}=${paramsObj[item]}&`;
                 }
             }
-            console.log(location);
             window.location.href = location;
         } else {
             this.fetchChildren(this.props.model.id);
         }
+    }
+
+    private hideChildren = () => {
+        this.setState({ children: null });
     }
 
     render() {
@@ -171,7 +169,12 @@ export class MainMenuItem extends React.PureComponent<IMainMenuItemProps, IMainM
         }
         return (
             React.createElement('div', { style: { display: 'flex', flexDirection: 'column' } },
-                React.createElement('div', { onClick: this.onClick }, this.props.model.name),
+                React.createElement('div', { style: { display: 'flex' } },
+                    this.state.status === FetchStatus.Fetched && this.state.children?.length > 0
+                        ? React.createElement('div', { onClick: this.hideChildren, style: { transform: 'rotate(90deg)' } }, '>')
+                        : null,
+                    React.createElement('div', { onClick: this.showChildren }, this.props.model.name),
+                ),
                 React.createElement('div', { style: { paddingLeft: '2rem' } }, component),
             )
         );
@@ -180,10 +183,10 @@ export class MainMenuItem extends React.PureComponent<IMainMenuItemProps, IMainM
     private fetchChildren = (parentId: string) => {
         this.setState({ status: FetchStatus.InProgress });
         // TODO: 
-        // axios.default.get(this.props.baseUrl + '/api/Configuration/Menu/' + parentId)
-        this._children(parentId)
+        axios.default.get(this.props.baseUrl + '/api/Configuration/Menu/' + parentId)
+            // this._children(parentId)
             .then(
-                children => this.setState({ children: children.sort((ch1, ch2) => ch1.orderIndex - ch2.orderIndex), status: FetchStatus.Fetched }),
+                children => this.setState({ children: children.data.sort((ch1, ch2) => ch1.orderIndex - ch2.orderIndex), status: FetchStatus.Fetched }),
                 reason => this.setState({ status: FetchStatus.Failed })
             );
     }
