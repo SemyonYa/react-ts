@@ -13,7 +13,7 @@ interface IRouterViewState {
     searchValue: string;
     pageSize: number;
     pageNumber: number;
-    rootQty: number;
+    pageQty: number;
     routes: RoutePartDetailsDTO[],
     status: FetchStatus
 }
@@ -29,7 +29,7 @@ export class RouteViewer extends React.PureComponent<ISectionProps, IRouterViewS
             searchValue: '',
             pageSize: 2,
             pageNumber: 1,
-            rootQty: 1,
+            pageQty: 1,
             routes: [],
             status: FetchStatus.InProgress
         };
@@ -79,7 +79,7 @@ export class RouteViewer extends React.PureComponent<ISectionProps, IRouterViewS
         request.then(
             response => {
                 // TODO: split response
-                this.setState({ routes: response.data, status: FetchStatus.Fetched, rootQty: 100 })
+                this.setState({ routes: response.data['Data'], status: FetchStatus.Fetched, pageQty: +response.data['TotalRowCount'] })
             }
         );
         // request.then(
@@ -117,11 +117,11 @@ export class RouteViewer extends React.PureComponent<ISectionProps, IRouterViewS
                     ? React.createElement('a', { href: '/Admin/PageEditor' }, 'Новая страница')
                     : null,
                 React.createElement('input', { onKeyDown: this.onPageSizeSubmit, placeholder: 'page size', type: 'number' }),
-                this.state.rootQty
+                this.state.pageQty
                     ? React.createElement(Pagination, {
                         onChange: this.changePage,
                         // TODO: routes.lenth - incorrect. API response...
-                        pageQty: Math.ceil(this.state.rootQty / this.state.pageSize),
+                        pageQty: Math.ceil(this.state.pageQty / this.state.pageSize),
                         pageNumber: this.state.pageNumber
                     })
                     : null
