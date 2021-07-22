@@ -10,6 +10,7 @@ import { ILayoutProps } from './models/ILayoutProps';
 import { MenuStore } from './models/MenuStore';
 // import { RouteViewer } from './components/RouteViewer';
 import { MainMenu } from './components/MainMenu';
+import { MainMenuEditor } from './_MainMenuEditor/MainMenuEditor';
 
 interface IAppState {
   expression: string;
@@ -31,7 +32,7 @@ export class App extends React.PureComponent<{}, IAppState> {
 
     // MAIN MENU
     return (
-      React.createElement(MainMenu, { isAdmin: true })
+      React.createElement(MainMenuEditor, {})
     );
 
     // // ADMIN TEMPLATE
