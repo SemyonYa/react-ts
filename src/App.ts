@@ -10,6 +10,7 @@ import { ILayoutProps } from './models/ILayoutProps';
 import { MenuStore } from './models/MenuStore';
 // import { RouteViewer } from './components/RouteViewer';
 import { MainMenu } from './components/MainMenu';
+import { APPLICATION_CONTEXT, IApplicationContext } from './context/IApplicationContext';
 
 interface IAppState {
   expression: string;
@@ -17,6 +18,7 @@ interface IAppState {
 }
 
 export class App extends React.PureComponent<{}, IAppState> {
+  private applicationContext: IApplicationContext;
   fake: Fake;
   constructor(props: any) {
     super(props);
@@ -31,7 +33,9 @@ export class App extends React.PureComponent<{}, IAppState> {
 
     // MAIN MENU
     return (
-      React.createElement(MainMenu, { isAdmin: true })
+      React.createElement(APPLICATION_CONTEXT.Provider, { value: this.applicationContext },
+        React.createElement(MainMenu, { isAdmin: true })
+      )
     );
 
     // // ADMIN TEMPLATE
