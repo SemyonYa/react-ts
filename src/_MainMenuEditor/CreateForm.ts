@@ -6,6 +6,7 @@ interface ICreateFormProps {
     parentId?: string;
     hide(): void;
     onCreate(item: MenuItemDTO): void;
+    showSelectParentModal(): void;
 }
 
 interface ICreateFormState {
@@ -81,19 +82,43 @@ export class CreateForm extends React.PureComponent<ICreateFormProps, ICreateFor
             React.createElement('div', {},
                 this.props.parentId ? `Create child for ${this.props.parentId}` : 'Create root item',
                 React.createElement('form', { onSubmit: this.onSubmit, style: { display: 'flex', flexDirection: 'column', alignItems: 'flex-start' } },
-                    // TODO: select from dropDown / modal with list
-                    React.createElement('input', { name: 'parentId', value: this.state.parentId ?? this.props.parentId ?? '', onChange: this.handleChange, type: 'text', /*readOnly: true*/ }),
-                    React.createElement('input', { name: 'name', value: this.state.name ?? '', onChange: this.handleChange, type: 'text' }),
-                    React.createElement('input', { name: 'orderIndex', value: this.state.orderIndex, onChange: this.handleChange, type: 'number' }),
-                    React.createElement('input', { name: 'externalUrl', value: this.state.externalUrl, onChange: this.handleChange, type: 'text' }),
-                    React.createElement('input', { name: 'internalPageId', value: this.state.internalPageId, onChange: this.handleChange, type: 'text' }),
-                    React.createElement(Params, { paramsString: this.state.parametersObjectJson, onChange: this.handleParamsChange }),
+                    this.buildFormItem(
+                        'ID родителя',
+                        React.createElement('input', { name: 'parentId', value: this.state.parentId ?? this.props.parentId ?? '', onClick: this.props.showSelectParentModal, /*onChange: this.handleChange, */type: 'text', readOnly: true })
+                    ),
+                    this.buildFormItem(
+                        'Наименование',
+                        React.createElement('input', { name: 'name', value: this.state.name ?? '', onChange: this.handleChange, type: 'text' })
+                    ),
+                    this.buildFormItem(
+                        'Порядок',
+                        React.createElement('input', { name: 'orderIndex', value: this.state.orderIndex, onChange: this.handleChange, type: 'number' })
+                    ),
+                    this.buildFormItem(
+                        'Внешний URL',
+                        React.createElement('input', { name: 'externalUrl', value: this.state.externalUrl, onChange: this.handleChange, type: 'text' })
+                    ),
+                    this.buildFormItem(
+                        'ID страницы',
+                        React.createElement('input', { name: 'internalPageId', value: this.state.internalPageId, onChange: this.handleChange, type: 'text' })
+                    ),
+                    this.buildFormItem(
+                        'Параметры',
+                        React.createElement(Params, { paramsString: this.state.parametersObjectJson, onChange: this.handleParamsChange })
+                    ),
                     React.createElement('div', { style: { display: 'flex' } },
                         React.createElement('button', { type: 'submit' }, 'Сохранить'),
                         React.createElement('button', { type: 'button', onClick: this.onCancel }, 'Отмена')
                     )
                 )
             )
+        );
+    }
+
+    private buildFormItem = (label: string, elem: React.ReactNode) => {
+        return React.createElement('div', { style: { display: 'flex', flexDirection: 'column', margin: '.25rem 0' } },
+            React.createElement('label', {}, label),
+            elem
         );
     }
 }

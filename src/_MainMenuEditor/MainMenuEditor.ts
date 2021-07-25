@@ -1,9 +1,9 @@
-import * as axios from 'axios';
 import React from 'react';
 import { MenuItemDTO } from '../models/MenuItemDTO2';
 import { MainMenuStore } from '../store/MainMenuStore';
 import { CreateForm } from './CreateForm';
 import { EditForm } from './EditForm';
+import { SelectParentModal } from './SelectParentModal';
 
 const store = new MainMenuStore();
 
@@ -27,6 +27,7 @@ interface IMainMenuEditorState {
     editableItem: MenuItemDTO;
     formType: FormType;
     parentId: string;
+    selectParentModalShown: boolean;
 }
 
 export class MainMenuEditor extends React.PureComponent<IMainMenuEditorProps, IMainMenuEditorState> {
@@ -37,7 +38,8 @@ export class MainMenuEditor extends React.PureComponent<IMainMenuEditorProps, IM
             status: FetchStatus.Fetched,
             editableItem: null,
             formType: null,
-            parentId: null
+            parentId: null,
+            selectParentModalShown: false
         };
     }
 
@@ -64,6 +66,18 @@ export class MainMenuEditor extends React.PureComponent<IMainMenuEditorProps, IM
 
     private hideForm = () => {
         this.toggleForm(null);
+    }
+
+    private showSelectParentModal = () => {
+        this.setState({ selectParentModalShown: true })
+    }
+
+    private hideSelectParentModal = () => {
+        this.setState({ selectParentModalShown: false })
+    }
+
+    private selectParent = (parentId: string) => {
+        this.setState({ selectParentModalShown: false, parentId })
     }
 
     private createItem = (item: MenuItemDTO) => {
@@ -124,7 +138,7 @@ export class MainMenuEditor extends React.PureComponent<IMainMenuEditorProps, IM
         let editorComponent: React.ReactNode;
         switch (this.state.formType) {
             case FormType.create:
-                editorComponent = React.createElement(CreateForm, { parentId: this.state.parentId, hide: this.hideForm, onCreate: this.createItem })
+                editorComponent = React.createElement(CreateForm, { parentId: this.state.parentId, hide: this.hideForm, onCreate: this.createItem, showSelectParentModal: this.showSelectParentModal })
                 break;
             case FormType.edit:
                 editorComponent = React.createElement(EditForm, { model: this.state.editableItem, onUpdate: this.updateItem, onDelete: this.deleteItem })
@@ -135,13 +149,18 @@ export class MainMenuEditor extends React.PureComponent<IMainMenuEditorProps, IM
         }
 
         return (
-            React.createElement('div', { style: { display: 'flex' } },
-                React.createElement('div', { style: { flex: '0 1 50%' } },
-                    treeComponent,
+            React.createElement('div', {},
+                React.createElement('div', { style: { display: 'flex' } },
+                    React.createElement('div', { style: { flex: '0 1 50%' } },
+                        treeComponent,
+                    ),
+                    React.createElement('div', { style: { flex: '0 1 50%' } },
+                        editorComponent
+                    ),
                 ),
-                React.createElement('div', { style: { flex: '0 1 50%' } },
-                    editorComponent
-                ),
+                this.state.selectParentModalShown
+                    ? React.createElement(SelectParentModal, { onSelect: this.selectParent, hide: this.hideSelectParentModal })
+                    : null
             )
         );
     }

@@ -43,7 +43,6 @@ export class Params extends React.Component<IParamsProps, IParamsState> {
     render() {
         return (
             React.createElement('div', { style: { display: 'flex', flexDirection: 'column' } },
-                React.createElement('div', {}, 'ПАРАМЕТРЫ'),
                 React.Children.toArray(this.items.map(model =>
                     React.createElement(ParamsItem, { model, onChange: this.onItemChanged, onRemove: this.removeItem })
                 )),
