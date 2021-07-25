@@ -48,32 +48,30 @@ export class AdminTemplate extends React.PureComponent<ILayoutProps, IAdminTempl
         this.setState({ menuShown: false });
     }
 
-    get styles(): any {
-        return {
-            root: {
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'stretch'
-            },
-            header: {
-                position: 'fixed',
-                top: '0px',
-                left: '0px',
-                right: '0px',
-            },
-            headerImg: {
-                width: '2rem',
-                height: '2rem',
-            },
-            menuBack: {
-                position: 'fixed',
-                top: 0,
-                right: 0,
-                bottom: 0,
-                left: 0,
-            }
-        };
-    }
+    styles: any = {
+        root: {
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'stretch'
+        },
+        header: {
+            position: 'fixed',
+            top: '0px',
+            left: '0px',
+            right: '0px',
+        },
+        headerImg: {
+            width: '2rem',
+            height: '2rem',
+        },
+        menuBack: {
+            position: 'fixed',
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+        }
+    };
 }
 
 ///

@@ -1,7 +1,9 @@
 import React from 'react';
-import * as axios from 'axios';
 import { ISectionProps } from '../models/ISectionProps';
 import { RoutePartDetailsDTO } from '../models/RoutePartDetailsDTO';
+import { RouteStore } from '../store/RouteStore';
+
+const store = new RouteStore();
 
 export enum FetchStatus {
     InProgress,
@@ -13,23 +15,21 @@ interface IRouterViewState {
     searchValue: string;
     pageSize: number;
     pageNumber: number;
-    pageQty: number;
+    totalRowCount: number;
     routes: RoutePartDetailsDTO[],
     status: FetchStatus
 }
 
 export class RouteViewer extends React.PureComponent<ISectionProps, IRouterViewState> {
     currentTimeout: any;
-    // TODO: baseUrl
-    baseUrl: string = 'http://qweqwe';
 
     constructor(props: ISectionProps) {
         super(props);
         this.state = {
             searchValue: '',
-            pageSize: 2,
+            pageSize: 10,
             pageNumber: 1,
-            pageQty: 1,
+            totalRowCount: null,
             routes: [],
             status: FetchStatus.InProgress
         };
@@ -47,13 +47,13 @@ export class RouteViewer extends React.PureComponent<ISectionProps, IRouterViewS
     private onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const currentValue: string = e.target.value;
         this.setState({ searchValue: currentValue });
+
         if (this.currentTimeout) clearTimeout(this.currentTimeout);
-        if (currentValue?.trim()) {
-            setTimeout(() => {
-                this.setState({ pageNumber: 1 });
-                this.fetch();
-            }, 500);
-        }
+
+        this.currentTimeout = setTimeout(() => {
+            this.setState({ pageNumber: 1 });
+            this.fetch();
+        }, 500);
     }
 
     private onPageSizeSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -64,29 +64,14 @@ export class RouteViewer extends React.PureComponent<ISectionProps, IRouterViewS
         }
     }
 
-    // TODO: replace data
     private fetch = () => {
         this.setState({ status: FetchStatus.InProgress });
-        // let request: Promise<RoutePartDetailsDTO[]>;
-        let request: Promise<axios.AxiosResponse<RoutePartDetailsDTO[]>>;
-        if (this.state.searchValue) {
-            // request = this._search(this.state.searchValue.trim());
-            request = axios.default.get<RoutePartDetailsDTO[]>(this.baseUrl + `/api/Configuration/Routes/search/${this.state.searchValue.trim()}?pageNumber=${this.state.pageNumber}&pageSize=${this.state.pageSize}`)
-        } else {
-            // request = this._list(this.state.pageNumber, this.state.pageSize);
-            request = axios.default.get<RoutePartDetailsDTO[]>(this.baseUrl + `/api/Configuration/Routes?pageNumber=${this.state.pageNumber}&pageSize=${this.state.pageSize}`)
-        }
-        request.then(
-            response => {
-                // TODO: split response
-                this.setState({ routes: response.data['Data'], status: FetchStatus.Fetched, pageQty: +response.data['TotalRowCount'] })
-            }
-        );
-        // request.then(
-        //     response => {
-        //         this.setState({ routes: response, status: FetchStatus.Fetched })
-        //     }
-        // );
+        store.get(this.state.pageNumber, this.state.pageSize, this.state.searchValue)
+            .then(
+                response => {
+                    this.setState({ routes: response.Data, status: FetchStatus.Fetched, totalRowCount: +response.TotalRowCount })
+                }
+            );
     }
 
     render() {
@@ -98,7 +83,7 @@ export class RouteViewer extends React.PureComponent<ISectionProps, IRouterViewS
             case FetchStatus.Fetched:
                 component = this.state.routes.length > 0
                     ? React.Children.toArray(this.state.routes.map(route =>
-                        React.createElement(Item, { route, baseUrl: this.baseUrl }),
+                        React.createElement(Item, { route }),
                     ))
                     : React.createElement('span', {}, 'empty list');
                 break;
@@ -117,60 +102,21 @@ export class RouteViewer extends React.PureComponent<ISectionProps, IRouterViewS
                     ? React.createElement('a', { href: '/Admin/PageEditor' }, 'Новая страница')
                     : null,
                 React.createElement('input', { onKeyDown: this.onPageSizeSubmit, placeholder: 'page size', type: 'number' }),
-                this.state.pageQty
+                this.state.totalRowCount
                     ? React.createElement(Pagination, {
                         onChange: this.changePage,
-                        // TODO: routes.lenth - incorrect. API response...
-                        pageQty: Math.ceil(this.state.pageQty / this.state.pageSize),
+                        pageQty: Math.ceil(this.state.totalRowCount / this.state.pageSize),
                         pageNumber: this.state.pageNumber
                     })
                     : null
             )
         );
     }
-
-
-    ///
-    /// TODO: DELETE FAKE REQUESTS 
-    private _list(pageNumber: number = 1, pageSize: number = 10): Promise<RoutePartDetailsDTO[]> {
-        return new Promise<RoutePartDetailsDTO[]>((resolve, reject) => {
-            setTimeout(() => {
-                resolve([
-                    { id: '1', name: 'Route 1', isPage: false, children: [] } as RoutePartDetailsDTO,
-                    { id: '2', name: 'Route 2', isPage: false, children: [] } as RoutePartDetailsDTO,
-                    { id: '3', name: 'Route 3', isPage: false, children: [] } as RoutePartDetailsDTO,
-                ]);
-            }, 700);
-        })
-    }
-
-    private _search(search: string): Promise<RoutePartDetailsDTO[]> {
-        return new Promise<RoutePartDetailsDTO[]>((resolve, reject) => {
-            setTimeout(() => {
-                resolve([
-                    {
-                        id: '1', name: 'Route 1', isPage: false, children: [
-                            {
-                                id: '1-1', name: 'Route 2', isPage: false, children: [
-                                    { id: '1-1-1', name: `${search} - third level`, isPage: false, children: [] } as RoutePartDetailsDTO,
-                                ]
-                            } as RoutePartDetailsDTO,
-                        ]
-                    } as RoutePartDetailsDTO,
-                    {
-                        id: '2', name: 'Route 2', isPage: false, children: [
-                            { id: '2-1', name: `${search} - second level`, isPage: false, children: [] } as RoutePartDetailsDTO,
-                        ]
-                    } as RoutePartDetailsDTO,
-                    { id: '3', name: `${search} - top level`, isPage: false, children: [] } as RoutePartDetailsDTO,
-                ]);
-            }, 700);
-        })
-    }
 }
 
 
 ///
+/// TODO: to separated component
 /// PAGINATION
 ///
 
@@ -193,17 +139,17 @@ class Pagination extends React.PureComponent<IPaginationProps> {
         return (
             React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '1rem' } },
                 ...React.Children.toArray(pages.map(page =>
-                    React.createElement('span', { onClick: () => this.onChange(page), style: () => this.styles(page) }, page)
+                    React.createElement(
+                        'span',
+                        {
+                            onClick: () => this.onChange(page),
+                            style: { fontWeight: page === this.props.pageNumber ? '800' : '400', cursor: 'pointer' }
+                        },
+                        page
+                    )
                 ))
             )
         );
-    }
-
-    private styles = (page: number): any => {
-        return {
-            fontWeight: page === this.props.pageNumber ? '800' : '400',
-            cursor: 'pointer'
-        };
     }
 }
 
@@ -213,7 +159,6 @@ class Pagination extends React.PureComponent<IPaginationProps> {
 
 interface IItemProps {
     route: RoutePartDetailsDTO;
-    baseUrl: string;
 }
 
 interface IItemState {
@@ -239,7 +184,7 @@ class Item extends React.PureComponent<IItemProps, IItemState> {
             case FetchStatus.Fetched:
                 component = this.props.route.children && this.props.route.children.length > 0
                     ? React.Children.toArray(this.props.route.children.map(route =>
-                        React.createElement(Item, { route, baseUrl: this.props.baseUrl })
+                        React.createElement(Item, { route })
                     ))
                     : null
                 break;
@@ -256,7 +201,7 @@ class Item extends React.PureComponent<IItemProps, IItemState> {
             React.createElement('div', { style: { display: 'flex', flexDirection: 'column' } },
                 React.createElement('div', {},
                     this.props.route.isPage
-                        ? React.createElement('a', { href: `#${this.props.route.id}`, onClick: () => this.goToPage(this.props.route.id) }, this.props.route.name)
+                        ? React.createElement('a', { href: `#${this.props.route.id}`, onClick: this.goToPage }, this.props.route.name)
                         : React.createElement('span', { onClick: this.fetchChildren }, this.props.route.name)
                 ),
                 React.createElement('div', { style: { display: 'flex', flexDirection: 'column', paddingLeft: '2rem' } }, component),
@@ -264,38 +209,23 @@ class Item extends React.PureComponent<IItemProps, IItemState> {
         );
     }
 
-    fetchChildren = () => {
+    private fetchChildren = () => {
         this.setState({ status: FetchStatus.InProgress });
-        // TODO: /api/Configuration/Routes/{elementId}
-        // this._children(this.props.route.id)
-        axios.default.get<RoutePartDetailsDTO[]>(this.props.baseUrl + `/api/Configuration/Routes/${this.props.route.id}`)
+        store.getChildren(this.props.route.id)
             .then(
-                response => {
-                    this.props.route.children = response.data;
+                children => {
+                    this.props.route.children = children;
                     this.setState({ status: FetchStatus.Fetched });
                     this.forceUpdate();
                 },
                 reason => {
                     this.setState({ status: FetchStatus.Failed });
                 }
-            )
+            );
     }
 
-    goToPage = (id: string) => {
-        alert('go to page ' + id);
+    private goToPage = () => {
+        alert('go to page ' + this.props.route.id);
     }
 
-
-    /// TODO: DELETE FAKE
-    private _children(parentId: string): Promise<RoutePartDetailsDTO[]> {
-        return new Promise<RoutePartDetailsDTO[]>((resolve, reject) => {
-            setTimeout(() => {
-                resolve([1, 2, 3].map(
-                    i => {
-                        return { id: `${parentId}-${i}`, name: `Route ${parentId}-${i}`, isPage: true, children: [] } as RoutePartDetailsDTO;
-                    }
-                ));
-            }, 700);
-        })
-    }
 }
