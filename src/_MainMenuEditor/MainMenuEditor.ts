@@ -1,7 +1,7 @@
 import * as axios from 'axios';
 import React from 'react';
 import { MenuItemDTO } from '../models/MenuItemDTO2';
-import { MainMenuStore } from '../stores/MainMenuStore';
+import { MainMenuStore } from '../store/MainMenuStore';
 import { CreateForm } from './CreateForm';
 import { EditForm } from './EditForm';
 
