@@ -1,13 +1,11 @@
 import * as axios from 'axios';
 import React from 'react';
 import { MenuItemDTO } from '../models/MenuItemDTO2';
+import { MainMenuStore } from '../stores/MainMenuStore';
 import { CreateForm } from './CreateForm';
 import { EditForm } from './EditForm';
 
-///
-/// Параметр isLink
-/// Изменение родительского элемента: модальное окно (нужно динамически подгружать children)
-///
+const store = new MainMenuStore();
 
 enum FetchStatus {
     InProgress,
@@ -32,8 +30,6 @@ interface IMainMenuEditorState {
 }
 
 export class MainMenuEditor extends React.PureComponent<IMainMenuEditorProps, IMainMenuEditorState> {
-    // TODO: set real base url or get from props
-    private baseUrl: string = 'https://qwe.rty';
     constructor(props: IMainMenuEditorProps) {
         super(props);
         this.state = {
@@ -51,8 +47,7 @@ export class MainMenuEditor extends React.PureComponent<IMainMenuEditorProps, IM
 
     private fetch = () => {
         this.setState({ status: FetchStatus.InProgress });
-        // axios.default.get(this.baseUrl + '/api/Configuration/Menu')
-        this._roots()
+        store.getRoots()
             .then(
                 roots => this.setState({ roots: roots.sort((r1, r2) => r1.orderIndex - r2.orderIndex), status: FetchStatus.Fetched }),
                 reason => this.setState({ status: FetchStatus.Failed })
@@ -72,8 +67,7 @@ export class MainMenuEditor extends React.PureComponent<IMainMenuEditorProps, IM
     }
 
     private createItem = (item: MenuItemDTO) => {
-        console.log(item);
-        axios.default.post(`${this.baseUrl}/api/Configuration/Menu/`, item)
+        store.create(item)
             .then(
                 res => console.log(res),
                 reason => console.log(reason)
@@ -81,17 +75,15 @@ export class MainMenuEditor extends React.PureComponent<IMainMenuEditorProps, IM
     }
 
     private updateItem = (item: MenuItemDTO) => {
-        console.log(item);
-        axios.default.put(`${this.baseUrl}/api/Configuration/Menu/${item.id}`, item)
+        store.update(item)
             .then(
                 res => console.log(res),
                 reason => console.log(reason)
             );
     }
 
-    private deleteItem = (item: MenuItemDTO) => {
-        console.log(item);
-        axios.default.delete(`${this.baseUrl}/api/Configuration/Menu/${item.id}`)
+    private deleteItem = (id: string) => {
+        store.delete(id)
             .then(
                 res => console.log(res),
                 reason => console.log(reason)
@@ -108,7 +100,7 @@ export class MainMenuEditor extends React.PureComponent<IMainMenuEditorProps, IM
                         ? React.Children.toArray(
                             [
                                 ...this.state.roots.map(model =>
-                                    React.createElement(MainMenuEditorItem, { model, baseUrl: this.baseUrl, toggleForm: this.toggleForm }),
+                                    React.createElement(MainMenuEditorItem, { model, toggleForm: this.toggleForm }),
                                 ),
                                 React.createElement('div', { onClick: this.showCreateForm }, '[+]')
                             ]
@@ -153,20 +145,6 @@ export class MainMenuEditor extends React.PureComponent<IMainMenuEditorProps, IM
             )
         );
     }
-
-    // TODO: DELETE
-    //          FAKE DATA
-    private _roots = (): Promise<MenuItemDTO[]> => {
-        return new Promise<MenuItemDTO[]>(
-            (resolve, reject) => {
-                setTimeout(() => {
-                    resolve([1, 2, 3].map(i => {
-                        return { id: i, name: `Item ${i}`, orderIndex: i } as MenuItemDTO;
-                    }));
-                }, 400);
-            }
-        );
-    }
 }
 
 /// 
@@ -175,7 +153,6 @@ export class MainMenuEditor extends React.PureComponent<IMainMenuEditorProps, IM
 
 interface IMainMenuEditorItemProps {
     model: MenuItemDTO;
-    baseUrl: string;
     toggleForm(editorType: FormType, editableItem?: MenuItemDTO, parentId?: string): void;
 }
 
@@ -204,7 +181,7 @@ class MainMenuEditorItem extends React.PureComponent<IMainMenuEditorItemProps, I
                         ? React.Children.toArray(
                             [
                                 ...this.state.children.map(model =>
-                                    React.createElement(MainMenuEditorItem, { model, baseUrl: this.props.baseUrl, toggleForm: this.props.toggleForm }),
+                                    React.createElement(MainMenuEditorItem, { model, toggleForm: this.props.toggleForm }),
                                 ),
                                 React.createElement('div', { onClick: this.create }, '[+]')
                             ]
@@ -236,9 +213,7 @@ class MainMenuEditorItem extends React.PureComponent<IMainMenuEditorItemProps, I
 
     private fetchChildren = () => {
         this.setState({ status: FetchStatus.InProgress });
-        // TODO: 
-        // axios.default.get(this.props.baseUrl + '/api/Configuration/Menu/' + parentId)
-        this._children(this.props.model.id)
+        store.getChildren(this.props.model.id)
             .then(
                 children => this.setState({ children: children.sort((ch1, ch2) => ch1.orderIndex - ch2.orderIndex), status: FetchStatus.Fetched }),
                 reason => this.setState({ status: FetchStatus.Failed })
@@ -251,27 +226,5 @@ class MainMenuEditorItem extends React.PureComponent<IMainMenuEditorItemProps, I
 
     private create = () => {
         this.props.toggleForm(FormType.create, null, this.props.model.id);
-    }
-
-
-
-    ///
-    /// TODO: delete
-    ///
-    private _children = (parentId: string): Promise<MenuItemDTO[]> => {
-        return new Promise<MenuItemDTO[]>(
-            (resolve, reject) => {
-                setTimeout(() => {
-                    resolve([1, 2, 3].map(i => {
-                        return {
-                            id: `${parentId}-${i}`,
-                            name: `Item ${parentId}-${i}`,
-                            orderIndex: i,
-                            internalPageId: parentId.length >= 3 ? `${parentId}-${i}` : null
-                        } as MenuItemDTO;
-                    }));
-                }, 400);
-            }
-        )
     }
 }

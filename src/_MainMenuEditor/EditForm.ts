@@ -4,7 +4,7 @@ import { MenuItemDTO } from "../models/MenuItemDTO2";
 interface IEditFormProps {
     model: MenuItemDTO;
     onUpdate(model: MenuItemDTO): void;
-    onDelete(model: MenuItemDTO): void;
+    onDelete(id: string): void;
 }
 
 interface IEditFormState {
