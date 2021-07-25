@@ -1,11 +1,8 @@
-import * as axios from 'axios';
+import { MainMenuStore } from '../store/MainMenuStore';
 import React from 'react';
 import { MenuItemDTO } from '../models/MenuItemDTO2';
 
-///
-/// Параметр isLink
-/// Изменение родительского элемента: модальное окно (нужно динамически подгружать children)
-///
+const store = new MainMenuStore();
 
 export enum FetchStatus {
     InProgress,
@@ -24,8 +21,7 @@ interface IMainMenuState {
 }
 
 export class MainMenu extends React.PureComponent<IMainMenuProps, IMainMenuState> {
-    // TODO: set real base url or get from props
-    private baseUrl: string = 'https://qwe.rty';
+
     constructor(props: IMainMenuProps) {
         super(props);
         this.state = {
@@ -46,7 +42,7 @@ export class MainMenu extends React.PureComponent<IMainMenuProps, IMainMenuState
                 if (this.state.roots) {
                     component = this.state.roots.length > 0
                         ? React.Children.toArray(this.state.roots.map(model =>
-                            React.createElement(MainMenuItem, { model, baseUrl: this.baseUrl }),
+                            React.createElement(MainMenuItem, { model }),
                         ))
                         : 'empty list';
                 } else {
@@ -82,24 +78,11 @@ export class MainMenu extends React.PureComponent<IMainMenuProps, IMainMenuState
 
     private fetch = () => {
         this.setState({ status: FetchStatus.InProgress });
-        // axios.default.get(this.baseUrl + '/api/Configuration/Menu')
-        this._roots()
+        store.getRoots()
             .then(
                 roots => this.setState({ roots: roots.sort((r1, r2) => r1.orderIndex - r2.orderIndex), status: FetchStatus.Fetched }),
                 reason => this.setState({ status: FetchStatus.Failed })
             );
-    }
-
-    private _roots = (): Promise<MenuItemDTO[]> => {
-        return new Promise<MenuItemDTO[]>(
-            (resolve, reject) => {
-                setTimeout(() => {
-                    resolve([1, 2, 3].map(i => {
-                        return { id: i, name: `Item ${i}`, orderIndex: i } as MenuItemDTO;
-                    }));
-                }, 1000);
-            }
-        );
     }
 
 }
@@ -110,7 +93,6 @@ export class MainMenu extends React.PureComponent<IMainMenuProps, IMainMenuState
 
 interface IMainMenuItemProps {
     model: MenuItemDTO;
-    baseUrl: string;
 }
 
 interface IMainMenuItemState {
@@ -129,9 +111,9 @@ export class MainMenuItem extends React.PureComponent<IMainMenuItemProps, IMainM
 
     }
 
-    private onClick = () => {
+    private showChildren = () => {
         if (this.props.model.internalPageId || this.props.model.externalUrl) {
-            let location = this.props.model.internalPageId ? this.props.baseUrl + '/go/to/page/' + this.props.model.internalPageId : this.props.model.externalUrl;
+            let location = this.props.model.internalPageId ? '/go/to/page/' + this.props.model.internalPageId : this.props.model.externalUrl;
             if (this.props.model.parametersObjectJson) {
                 location += '?';
                 const paramsObj = JSON.parse(this.props.model.parametersObjectJson)
@@ -139,11 +121,14 @@ export class MainMenuItem extends React.PureComponent<IMainMenuItemProps, IMainM
                     location += `${item}=${paramsObj[item]}&`;
                 }
             }
-            console.log(location);
             window.location.href = location;
         } else {
             this.fetchChildren(this.props.model.id);
         }
+    }
+
+    private hideChildren = () => {
+        this.setState({ children: null });
     }
 
     render() {
@@ -153,7 +138,7 @@ export class MainMenuItem extends React.PureComponent<IMainMenuItemProps, IMainM
                 if (this.state.children) {
                     component = this.state.children.length > 0
                         ? React.Children.toArray(this.state.children.map(model =>
-                            React.createElement(MainMenuItem, { model, baseUrl: this.props.baseUrl }),
+                            React.createElement(MainMenuItem, { model }),
                         ))
                         : 'empty list';
                 } else {
@@ -171,7 +156,12 @@ export class MainMenuItem extends React.PureComponent<IMainMenuItemProps, IMainM
         }
         return (
             React.createElement('div', { style: { display: 'flex', flexDirection: 'column' } },
-                React.createElement('div', { onClick: this.onClick }, this.props.model.name),
+                React.createElement('div', { style: { display: 'flex' } },
+                    this.state.status === FetchStatus.Fetched && this.state.children?.length > 0
+                        ? React.createElement('div', { onClick: this.hideChildren, style: { transform: 'rotate(90deg)' } }, '>')
+                        : null,
+                    React.createElement('div', { onClick: this.showChildren }, this.props.model.name),
+                ),
                 React.createElement('div', { style: { paddingLeft: '2rem' } }, component),
             )
         );
@@ -179,32 +169,11 @@ export class MainMenuItem extends React.PureComponent<IMainMenuItemProps, IMainM
 
     private fetchChildren = (parentId: string) => {
         this.setState({ status: FetchStatus.InProgress });
-        // TODO: 
-        // axios.default.get(this.props.baseUrl + '/api/Configuration/Menu/' + parentId)
-        this._children(parentId)
+        store.getChildren(parentId)
             .then(
                 children => this.setState({ children: children.sort((ch1, ch2) => ch1.orderIndex - ch2.orderIndex), status: FetchStatus.Fetched }),
                 reason => this.setState({ status: FetchStatus.Failed })
             );
     }
 
-    // TODO: delete
-    private _children = (parentId: string): Promise<MenuItemDTO[]> => {
-        return new Promise<MenuItemDTO[]>(
-            (resolve, reject) => {
-                setTimeout(() => {
-                    console.log(parentId);
-
-                    resolve([1, 2, 3].map(i => {
-                        return {
-                            id: `${parentId}-${i}`,
-                            name: `Item ${parentId}-${i}`,
-                            orderIndex: i,
-                            internalPageId: parentId.length >= 3 ? `${parentId}-${i}` : null
-                        } as MenuItemDTO;
-                    }));
-                }, 1000);
-            }
-        )
-    }
 }
