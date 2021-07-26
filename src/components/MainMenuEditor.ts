@@ -1,14 +1,9 @@
 import React, { BaseSyntheticEvent, ChangeEvent } from 'react';
+import { APPLICATION_CONTEXT, IApplicationContext } from '../context/IApplicationContext';
 import { MenuItemDTO } from '../models/MenuItemDTO2';
 import { MainMenuStore } from '../store/MainMenuStore';
 
 const store = new MainMenuStore();
-
-enum FetchStatus {
-    InProgress,
-    Fetched,
-    Failed
-}
 
 enum FormType {
     create,
@@ -19,7 +14,6 @@ interface IMainMenuEditorProps {
 }
 
 interface IMainMenuEditorState {
-    status: FetchStatus;
     roots: MenuItemDTO[];
     editableItem: MenuItemDTO;
     formType: FormType;
@@ -32,7 +26,6 @@ export class MainMenuEditor extends React.PureComponent<IMainMenuEditorProps, IM
         super(props);
         this.state = {
             roots: [],
-            status: FetchStatus.Fetched,
             editableItem: null,
             formType: null,
             parentId: null,
@@ -45,12 +38,16 @@ export class MainMenuEditor extends React.PureComponent<IMainMenuEditorProps, IM
     }
 
     private fetch = () => {
-        this.setState({ status: FetchStatus.InProgress });
+        let context = this.context as IApplicationContext;
+        context.displayLoadingScreen();
         store.getRoots()
             .then(
-                roots => { this.setState({ roots: roots.sort((r1, r2) => r1.orderIndex - r2.orderIndex), status: FetchStatus.Fetched }) },
-                reason => { this.setState({ status: FetchStatus.Failed }) }
-            );
+                roots => {
+                    this.setState({ roots: roots.sort((r1, r2) => r1.orderIndex - r2.orderIndex) });
+                    context.hideLoadingScreen();
+                },
+            )
+            .catch(context.contextController.setError);
     }
 
     private toggleForm = (formType: FormType, editableItem: MenuItemDTO = null, parentId = null) => {
@@ -86,60 +83,39 @@ export class MainMenuEditor extends React.PureComponent<IMainMenuEditorProps, IM
     }
 
     private createItem = (item: MenuItemDTO) => {
+        let context = this.context as IApplicationContext;
         store.create(item)
             .then(
-                res => { this.fetch() },
-                reason => { console.log(reason) }
-            );
+                res => {
+                    this.fetch();
+                },
+            )
+            .catch(context.contextController.setError);
     }
 
     private updateItem = (item: MenuItemDTO) => {
+        let context = this.context as IApplicationContext;
         store.update(item)
             .then(
-                res => { this.fetch() },
-                reason => { console.log(reason) }
-            );
+                res => {
+                    this.fetch();
+                }
+            )
+            .catch(context.contextController.setError);
     }
 
     private deleteItem = (id: string) => {
+        let context = this.context as IApplicationContext;
         store.delete(id)
             .then(
-                res => { this.fetch() },
-                reason => { console.log(reason) }
-            );
+                res => {
+                    this.fetch();
+                },
+            )
+            .catch(context.contextController.setError);
     }
 
     render() {
-        // TREE
-        let treeComponent: React.ReactNode;
-        switch (this.state.status) {
-            case FetchStatus.Fetched:
-                if (this.state.roots) {
-                    treeComponent = this.state.roots.length > 0
-                        ? React.Children.toArray(
-                            [
-                                ...this.state.roots.map(model =>
-                                    React.createElement(MainMenuEditorItem, { model, toggleForm: this.toggleForm }),
-                                ),
-                                React.createElement('div', { onClick: this.showForm }, '[+]')
-                            ]
-                        )
-                        : 'empty list';
-                } else {
-                    treeComponent = null
-                }
-                break;
-            case FetchStatus.InProgress:
-                treeComponent = 'in progress';
-                break;
-            case FetchStatus.Failed:
-                treeComponent = 'failed';
-                break;
-            default:
-                break;
-        }
-
-        // FORM
         let formComponent: React.ReactNode;
         switch (this.state.formType) {
             case FormType.create:
@@ -171,7 +147,18 @@ export class MainMenuEditor extends React.PureComponent<IMainMenuEditorProps, IM
             React.createElement('div', {},
                 React.createElement('div', { style: { display: 'flex' } },
                     React.createElement('div', { style: { flex: '0 1 50%' } },
-                        treeComponent,
+                        this.state.roots ?
+                            this.state.roots.length > 0
+                                ? React.Children.toArray(
+                                    [
+                                        ...this.state.roots.map(model =>
+                                            React.createElement(MainMenuEditorItem, { model, toggleForm: this.toggleForm }),
+                                        ),
+                                        React.createElement('div', { onClick: this.showForm }, '[+]')
+                                    ]
+                                )
+                                : 'empty list'
+                            : null
                     ),
                     React.createElement('div', { style: { flex: '0 1 50%' } },
                         formComponent
@@ -185,6 +172,9 @@ export class MainMenuEditor extends React.PureComponent<IMainMenuEditorProps, IM
     }
 }
 
+MainMenuEditor.contextType = APPLICATION_CONTEXT;
+
+
 /// 
 ///  MAIN MENU ITEM
 /// 
@@ -195,7 +185,6 @@ interface IMainMenuEditorItemProps {
 }
 
 interface IMainMenuEditorItemState {
-    status: FetchStatus;
     children: MenuItemDTO[];
 }
 
@@ -205,63 +194,49 @@ class MainMenuEditorItem extends React.PureComponent<IMainMenuEditorItemProps, I
         super(props);
         this.state = {
             children: null,
-            status: FetchStatus.Fetched
         };
 
     }
 
     render() {
-        let component: React.ReactNode;
-        switch (this.state.status) {
-            case FetchStatus.Fetched:
-                if (this.state.children) {
-                    component = this.state.children.length > 0
-                        ? React.Children.toArray(
-                            [
-                                ...this.state.children.map(model =>
-                                    React.createElement(MainMenuEditorItem, { model, toggleForm: this.props.toggleForm }),
-                                ),
-                                React.createElement('div', { onClick: this.create }, '[+]')
-                            ]
-                        )
-                        : 'empty list';
-                } else {
-                    component = null
-                }
-                break;
-            case FetchStatus.InProgress:
-                component = 'in progress';
-                break;
-            case FetchStatus.Failed:
-                component = 'failed';
-                break;
-            default:
-                break;
-        }
         return (
             React.createElement('div', { style: { display: 'flex', flexDirection: 'column' } },
                 React.createElement('div', { style: { display: 'flex' } },
                     React.createElement('div', { onClick: this.fetchChildren }, this.props.model.name),
                     React.createElement('div', { onClick: this.edit }, '[edit]'),
                 ),
-                React.createElement('div', { style: { paddingLeft: '2rem' } }, component),
+                React.createElement('div', { style: { paddingLeft: '2rem' } },
+                    this.state.children ?
+                        this.state.children.length > 0
+                            ? React.Children.toArray(
+                                [
+                                    ...this.state.children.map(model =>
+                                        React.createElement(MainMenuEditorItem, { model, toggleForm: this.props.toggleForm }),
+                                    ),
+                                    React.createElement('div', { onClick: this.create }, '[+]')
+                                ]
+                            )
+                            : 'empty list'
+                        : null
+                ),
             )
         );
     }
 
     private fetchChildren = () => {
-        this.setState({ status: FetchStatus.InProgress });
+        let context = this.context as IApplicationContext;
+        context.displayLoadingScreen();
         store.getChildren(this.props.model.id)
             .then(
-                children => this.setState({ children: children.sort((ch1, ch2) => ch1.orderIndex - ch2.orderIndex), status: FetchStatus.Fetched }),
-                reason => this.setState({ status: FetchStatus.Failed })
-            );
+                children => {
+                    this.setState({ children: children.sort((ch1, ch2) => ch1.orderIndex - ch2.orderIndex) });
+                    context.hideLoadingScreen();
+                }
+            )
+            .catch(context.contextController.setError);
     }
 
     private edit = () => {
-        console.log(this.props.model.parentId);
-        console.log(this.props.model);
-
         this.props.toggleForm(FormType.edit, this.props.model, this.props.model.parentId);
     }
 
@@ -269,6 +244,9 @@ class MainMenuEditorItem extends React.PureComponent<IMainMenuEditorItemProps, I
         this.props.toggleForm(FormType.create, null, this.props.model.id);
     }
 }
+
+MainMenuEditorItem.contextType = APPLICATION_CONTEXT;
+
 
 ///
 /// FORM
@@ -298,7 +276,6 @@ class Form extends React.Component<IFormProps, IFormState> {
 
     constructor(props: IFormProps) {
         super(props);
-        console.log(props);
 
         this.state = {
             id: null,
@@ -311,7 +288,7 @@ class Form extends React.Component<IFormProps, IFormState> {
         };
     }
 
-    shouldComponentUpdate(nextProps: IFormProps, nextState: IFormState, nextContext: any) {
+    shouldComponentUpdate(nextProps: IFormProps, _: IFormState, __: any) {
         if (nextProps.editableModel?.id !== this.props.editableModel?.id) {
             this.setState({
                 id: null,
@@ -353,9 +330,6 @@ class Form extends React.Component<IFormProps, IFormState> {
     private handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         let key: string = e.target.name;
         switch (key) {
-            // case 'parentId':
-            //     this.setState({ parentId: e.target.value })
-            //     break;
             case 'name':
                 this.setState({ name: e.target.value })
                 break;
