@@ -10,7 +10,7 @@ import { ILayoutProps } from './models/ILayoutProps';
 import { MenuStore } from './models/MenuStore';
 // import { RouteViewer } from './components/RouteViewer';
 import { MainMenu } from './components/MainMenu';
-import { MainMenuEditor } from './_MainMenuEditor/MainMenuEditor';
+import { MainMenuEditor } from './components/MainMenuEditor';
 
 interface IAppState {
   expression: string;
