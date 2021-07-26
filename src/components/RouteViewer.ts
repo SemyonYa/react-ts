@@ -1,15 +1,11 @@
 import React from 'react';
+import { APPLICATION_CONTEXT, IApplicationContext } from '../context/IApplicationContext';
 import { ISectionProps } from '../models/ISectionProps';
 import { RoutePartDetailsDTO } from '../models/RoutePartDetailsDTO';
 import { RouteStore } from '../store/RouteStore';
+import { Pagination } from './Pagination';
 
 const store = new RouteStore();
-
-export enum FetchStatus {
-    InProgress,
-    Fetched,
-    Failed
-}
 
 interface IRouterViewState {
     searchValue: string;
@@ -17,7 +13,6 @@ interface IRouterViewState {
     pageNumber: number;
     totalRowCount: number;
     routes: RoutePartDetailsDTO[],
-    status: FetchStatus
 }
 
 export class RouteViewer extends React.PureComponent<ISectionProps, IRouterViewState> {
@@ -31,7 +26,6 @@ export class RouteViewer extends React.PureComponent<ISectionProps, IRouterViewS
             pageNumber: 1,
             totalRowCount: null,
             routes: [],
-            status: FetchStatus.InProgress
         };
     }
 
@@ -65,42 +59,29 @@ export class RouteViewer extends React.PureComponent<ISectionProps, IRouterViewS
     }
 
     private fetch = () => {
-        this.setState({ status: FetchStatus.InProgress });
+        let context = this.context as IApplicationContext;
+        context.displayLoadingScreen();
         store.get(this.state.pageNumber, this.state.pageSize, this.state.searchValue)
             .then(
                 response => {
-                    this.setState({ routes: response.Data, status: FetchStatus.Fetched, totalRowCount: +response.TotalRowCount })
+                    this.setState({ routes: response.Data, totalRowCount: +response.TotalRowCount });
+                    context.hideLoadingScreen();
                 }
-            );
+            ).catch(context.contextController.setError);
     }
 
     render() {
-        let component: React.ReactNode;
-        switch (this.state.status) {
-            case FetchStatus.InProgress:
-                component = React.createElement('span', {}, 'in progress');
-                break;
-            case FetchStatus.Fetched:
-                component = this.state.routes.length > 0
-                    ? React.Children.toArray(this.state.routes.map(route =>
-                        React.createElement(Item, { route }),
-                    ))
-                    : React.createElement('span', {}, 'empty list');
-                break;
-            case FetchStatus.Failed:
-                component = React.createElement('span', {}, 'failed');
-                break;
-            default:
-                component = null;
-                break;
-        }
         return (
             React.createElement('div', { style: { display: 'flex', flexDirection: 'column', maxWidth: '25rem', marginTop: '5rem' } },
                 React.createElement('input', { onChange: this.onSearchChange, value: this.state.searchValue, placeholder: 'search' }),
-                React.createElement('div', { style: { display: 'flex', flexDirection: 'column' } }, component),
-                (this.state.status === FetchStatus.Fetched)
-                    ? React.createElement('a', { href: '/Admin/PageEditor' }, 'Новая страница')
-                    : null,
+                React.createElement('div', { style: { display: 'flex', flexDirection: 'column' } },
+                    this.state.routes.length > 0
+                        ? React.Children.toArray(this.state.routes.map(route =>
+                            React.createElement(Item, { route }),
+                        ))
+                        : React.createElement('span', {}, 'empty list')
+                ),
+                React.createElement('a', { href: '/Admin/PageEditor' }, 'Новая страница'),
                 React.createElement('input', { onKeyDown: this.onPageSizeSubmit, placeholder: 'page size', type: 'number' }),
                 this.state.totalRowCount
                     ? React.createElement(Pagination, {
@@ -114,44 +95,7 @@ export class RouteViewer extends React.PureComponent<ISectionProps, IRouterViewS
     }
 }
 
-
-///
-/// TODO: to separated component
-/// PAGINATION
-///
-
-interface IPaginationProps {
-    pageQty: number;
-    pageNumber: number;
-    onChange(page: number): void;
-}
-
-class Pagination extends React.PureComponent<IPaginationProps> {
-
-    private onChange = (page: number) => {
-        if (this.props.pageNumber !== page) {
-            this.props.onChange(page);
-        }
-    }
-
-    render() {
-        let pages: number[] = Array(this.props.pageQty).fill(0).map((_, i) => i + 1);
-        return (
-            React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '1rem' } },
-                ...React.Children.toArray(pages.map(page =>
-                    React.createElement(
-                        'span',
-                        {
-                            onClick: () => this.onChange(page),
-                            style: { fontWeight: page === this.props.pageNumber ? '800' : '400', cursor: 'pointer' }
-                        },
-                        page
-                    )
-                ))
-            )
-        );
-    }
-}
+RouteViewer.contextType = APPLICATION_CONTEXT;
 
 ///
 /// ITEM
@@ -161,42 +105,9 @@ interface IItemProps {
     route: RoutePartDetailsDTO;
 }
 
-interface IItemState {
-    status: FetchStatus;
-}
-
-class Item extends React.PureComponent<IItemProps, IItemState> {
-
-    constructor(props: IItemProps) {
-        super(props);
-        this.state = {
-            status: FetchStatus.Fetched
-        }
-    }
+class Item extends React.PureComponent<IItemProps> {
 
     render() {
-        let component: React.ReactNode;
-        console.log(this.props.route.id, this.props.route.children && this.props.route.children.length > 0);
-        switch (this.state.status) {
-            case FetchStatus.InProgress:
-                component = React.createElement('span', {}, 'in progress');
-                break;
-            case FetchStatus.Fetched:
-                component = this.props.route.children && this.props.route.children.length > 0
-                    ? React.Children.toArray(this.props.route.children.map(route =>
-                        React.createElement(Item, { route })
-                    ))
-                    : null
-                break;
-            case FetchStatus.Failed:
-                component = React.createElement('span', {}, 'failed');
-                break;
-            default:
-                component = null;
-                break;
-        }
-        console.log(component);
-
         return (
             React.createElement('div', { style: { display: 'flex', flexDirection: 'column' } },
                 React.createElement('div', {},
@@ -204,28 +115,34 @@ class Item extends React.PureComponent<IItemProps, IItemState> {
                         ? React.createElement('a', { href: `#${this.props.route.id}`, onClick: this.goToPage }, this.props.route.name)
                         : React.createElement('span', { onClick: this.fetchChildren }, this.props.route.name)
                 ),
-                React.createElement('div', { style: { display: 'flex', flexDirection: 'column', paddingLeft: '2rem' } }, component),
+                React.createElement('div', { style: { display: 'flex', flexDirection: 'column', paddingLeft: '2rem' } },
+                    this.props.route.children && this.props.route.children.length > 0
+                        ? React.Children.toArray(this.props.route.children.map(route =>
+                            React.createElement(Item, { route })
+                        ))
+                        : null
+                ),
             )
         );
     }
 
     private fetchChildren = () => {
-        this.setState({ status: FetchStatus.InProgress });
+        let context = this.context as IApplicationContext;
+        context.displayLoadingScreen();
         store.getChildren(this.props.route.id)
             .then(
                 children => {
                     this.props.route.children = children;
-                    this.setState({ status: FetchStatus.Fetched });
+                    context.hideLoadingScreen();
                     this.forceUpdate();
-                },
-                reason => {
-                    this.setState({ status: FetchStatus.Failed });
                 }
-            );
+            )
+            .catch(context.contextController.setError);
     }
 
     private goToPage = () => {
         alert('go to page ' + this.props.route.id);
     }
-
 }
+
+Item.contextType = APPLICATION_CONTEXT;

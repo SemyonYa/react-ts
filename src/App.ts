@@ -12,6 +12,7 @@ import { MenuStore } from './models/MenuStore';
 import { MainMenu } from './components/MainMenu';
 import { APPLICATION_CONTEXT, IApplicationContext } from './context/IApplicationContext';
 import { MainMenuEditor } from './components/MainMenuEditor';
+import { RouteViewer } from './components/RouteViewer';
 
 interface IAppState {
   expression: string;
@@ -23,11 +24,23 @@ export class App extends React.PureComponent<{}, IAppState> {
   fake: Fake;
   constructor(props: any) {
     super(props);
-    this.fake = new Fake();
-    this.state = {
-      expression: '( 1 + age ) > 34',
-      pageNumber: 1
-    };
+    this.applicationContext = {
+      user: null,
+      lastError: null,
+      contextController: {
+        setError: () => { } /* this.setError */
+      },
+      changePage: (id: any, parameters: any) => {
+        console.log(id, parameters);
+      }, /* this.beginLoadingPageId */
+      displayLoadingScreen: () => { console.log('displayLoadingScreen'); },
+      hideLoadingScreen: () => { console.log('hideLoadingScreen'); }
+    }
+    // this.fake = new Fake();
+    // this.state = {
+    //   expression: '( 1 + age ) > 34',
+    //   pageNumber: 1
+    // };
   }
 
   render() {
@@ -35,7 +48,8 @@ export class App extends React.PureComponent<{}, IAppState> {
     // MAIN MENU
     return (
       React.createElement(APPLICATION_CONTEXT.Provider, { value: this.applicationContext },
-        React.createElement(MainMenu, { isAdmin: true })
+        React.createElement(RouteViewer, { sectionComponentConfiguration: {} })
+        // React.createElement(MainMenu, { isAdmin: true })
       )
 
     );
