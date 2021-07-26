@@ -48,10 +48,9 @@ export class App extends React.PureComponent<{}, IAppState> {
     // MAIN MENU
     return (
       React.createElement(APPLICATION_CONTEXT.Provider, { value: this.applicationContext },
-        React.createElement(RouteViewer, { sectionComponentConfiguration: {} })
-        // React.createElement(MainMenu, { isAdmin: true })
+        // React.createElement(RouteViewer, { sectionComponentConfiguration: {} })
+        React.createElement(MainMenu, { isAdmin: true })
       )
-
     );
 
     // // ADMIN TEMPLATE
