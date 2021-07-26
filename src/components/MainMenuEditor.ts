@@ -429,11 +429,12 @@ class SelectParentModal extends React.Component<ISelectParentModalProps, ISelect
     }
 
     componentDidMount() {
+        let context = this.context as IApplicationContext;
         store.getRoots()
             .then(
                 roots => { this.setState({ roots }) },
-                reason => { console.log(reason) }
-            );
+            )
+            .catch(context.contextController.setError);
     }
 
     render() {
@@ -475,11 +476,12 @@ class ParentItem extends React.Component<IParentItemProps, IParentState> {
     }
 
     fetchChildren = () => {
+        let context = this.context as IApplicationContext;
         store.getChildren(this.props.item.id)
             .then(
                 children => this.setState({ children }),
-                reason => { console.log(reason) }
-            );
+            )
+            .catch(context.contextController.setError);
     }
 
     render() {
