@@ -86,14 +86,13 @@ export class MainMenuStore {
         return new Promise<MenuItemDTO[]>(
             (resolve, reject) => {
                 setTimeout(() => {
-                    console.log(parentId);
-
                     resolve([1, 2, 3].map(i => {
                         return {
                             id: `${parentId}-${i}`,
                             name: `Item ${parentId}-${i}`,
                             orderIndex: i,
-                            internalPageId: parentId.length >= 3 ? `${parentId}-${i}` : null
+                            internalPageId: parentId.length >= 3 ? `${parentId}-${i}` : null,
+                            parentId
                         } as MenuItemDTO;
                     }));
                 }, 1000);

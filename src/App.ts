@@ -11,6 +11,7 @@ import { MenuStore } from './models/MenuStore';
 // import { RouteViewer } from './components/RouteViewer';
 import { MainMenu } from './components/MainMenu';
 import { APPLICATION_CONTEXT, IApplicationContext } from './context/IApplicationContext';
+import { MainMenuEditor } from './components/MainMenuEditor';
 
 interface IAppState {
   expression: string;
@@ -36,6 +37,7 @@ export class App extends React.PureComponent<{}, IAppState> {
       React.createElement(APPLICATION_CONTEXT.Provider, { value: this.applicationContext },
         React.createElement(MainMenu, { isAdmin: true })
       )
+
     );
 
     // // ADMIN TEMPLATE
