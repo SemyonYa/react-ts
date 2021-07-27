@@ -7,9 +7,11 @@ export interface IRouteResponse {
 }
 
 export class RouteStore {
-    baseUrl: string = 'https://qwer.ty';
-    routeUrl: string = `${this.baseUrl}/api/Configuration/Routes`;
+    routeUrl: string;
+    constructor(baseUrl: string) {
+        this.routeUrl = `${baseUrl}/api/Configuration/Routes`;
 
+    }
     get(pageNumber: number, pageSize: number, searchValue: string = null) {
         return searchValue ? this._search(searchValue) : this._list();
         // TODO: 

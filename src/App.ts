@@ -12,8 +12,10 @@ import { MenuStore } from './models/MenuStore';
 import { MainMenu } from './components/MainMenu';
 import { APPLICATION_CONTEXT, IApplicationContext } from './context/IApplicationContext';
 import { MainMenuEditor } from './components/MainMenuEditor';
+// import { RouteViewer } from './components/RouteViewer';
+import { MenusManager } from './components/MenusManager';
+import { RouteViewer2 } from './components/RouteViewer2';
 import { RouteViewer } from './components/RouteViewer';
-import { MenuEditor } from './components/MenuEditor';
 
 interface IAppState {
   expression: string;
@@ -49,7 +51,8 @@ export class App extends React.PureComponent<{}, IAppState> {
     // MAIN MENU
     return (
       React.createElement(APPLICATION_CONTEXT.Provider, { value: this.applicationContext },
-        React.createElement(MenuEditor)
+        React.createElement(RouteViewer2, { sectionComponentConfiguration: { baseUrl: '' } })
+        // React.createElement(MenuEditor)
         // React.createElement(RouteViewer, { sectionComponentConfiguration: {} })
         // React.createElement(MainMenuEditor, {})
       )

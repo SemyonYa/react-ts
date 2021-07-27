@@ -5,7 +5,7 @@ import { RoutePartDetailsDTO } from '../models/RoutePartDetailsDTO';
 import { RouteStore } from '../store/RouteStore';
 import { Pagination } from './Pagination';
 
-const store = new RouteStore();
+const store = new RouteStore('');
 
 interface IRouterViewState {
     searchValue: string;

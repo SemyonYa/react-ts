@@ -3,18 +3,18 @@ import { APPLICATION_CONTEXT, IApplicationContext } from '../context/IApplicatio
 import { NavigationMenuDTO } from '../models/NavigationMenuDTO';
 import { MenuEditingService } from '../store/MenuEditingService';
 
-interface IMenuEditorProps {
+interface IMenusManagerProps {
     baseUrl: string;
 }
 
-interface IMenuEditorState {
+interface IMenusManagerState {
     items: NavigationMenuDTO[];
     isCreate: boolean;
 }
 
-export class MenuEditor extends React.Component<IMenuEditorProps, IMenuEditorState> {
+export class MenusManager extends React.Component<IMenusManagerProps, IMenusManagerState> {
     store: MenuEditingService;
-    constructor(props: IMenuEditorProps) {
+    constructor(props: IMenusManagerProps) {
         super(props);
         this.store = new MenuEditingService(props.baseUrl);
         this.state = {
@@ -162,4 +162,4 @@ class Create extends React.Component<ICreateProps, ICreateState> {
     }
 }
 
-MenuEditor.contextType = APPLICATION_CONTEXT;
+MenusManager.contextType = APPLICATION_CONTEXT;
