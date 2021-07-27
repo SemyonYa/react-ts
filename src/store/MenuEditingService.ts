@@ -1,6 +1,6 @@
 
-import * as axios from "axios";
-import { NavigationMenuDTO } from "../models/NavigationMenuDTO"
+import * as axios from 'axios';
+import { NavigationMenuDTO } from '../models/NavigationMenuDTO'
 
 export class MenuEditingService {
     menuUrl: string;

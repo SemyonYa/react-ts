@@ -13,7 +13,7 @@ import { MainMenu } from './components/MainMenu';
 import { APPLICATION_CONTEXT, IApplicationContext } from './context/IApplicationContext';
 import { MainMenuEditor } from './components/MainMenuEditor';
 import { RouteViewer } from './components/RouteViewer';
-import { MenuEditor } from './_MenuEditor/MenuEditor';
+import { MenuEditor } from './components/MenuEditor';
 
 interface IAppState {
   expression: string;
