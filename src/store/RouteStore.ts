@@ -13,7 +13,8 @@ export class RouteStore {
 
     }
     get(pageNumber: number, pageSize: number, searchValue: string = null) {
-        return searchValue ? this._search(searchValue) : this._list();
+        console.log("🚀 ~ file: RouteStore.ts ~ line 20 ~ RouteStore ~ get ~ pageNumber, pageSize", pageNumber, pageSize)
+        return searchValue ? this._search(searchValue) : this._list(pageNumber, pageSize);
         // TODO: 
         const url: string = this.routeUrl + (`/${searchValue}` ?? '');
         return new Promise<IRouteResponse>((resolve, reject) => {
@@ -42,16 +43,14 @@ export class RouteStore {
     ///
     /// TODO: DELETE FAKE REQUESTS 
     private _list(pageNumber: number = 1, pageSize: number = 10): Promise<IRouteResponse> {
+        let items: number[] = Array(pageSize).fill(0).map((_, i) => (pageNumber - 1) * pageSize + i + 1);
+
         return new Promise<IRouteResponse>((resolve, reject) => {
             setTimeout(() => {
                 resolve(
                     {
-                        Data: [
-                            { id: '1', name: 'Route 1', isPage: false, children: [] } as RoutePartDetailsDTO,
-                            { id: '2', name: 'Route 2', isPage: false, children: [] } as RoutePartDetailsDTO,
-                            { id: '3', name: 'Route 3', isPage: false, children: [] } as RoutePartDetailsDTO,
-                        ],
-                        TotalRowCount: 15,
+                        Data: items.map(i => <RoutePartDetailsDTO>{ id: `${i}`, name: `Route ${i}`, isPage: false, children: [] }),
+                        TotalRowCount: 35,
                     }
                 );
             }, 700);

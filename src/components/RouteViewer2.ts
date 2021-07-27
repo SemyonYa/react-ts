@@ -111,13 +111,28 @@ class List extends React.Component<IListProps, IListState> {
         }
     }
 
-
+    shouldComponentUpdate(nextProps: IListProps, nextState: IListState, nextContext: any) {
+        if (
+            this.props.pageNumber !== nextProps.pageNumber ||
+            this.props.pageSize !== nextProps.pageSize ||
+            this.props.searchValue !== nextProps.searchValue
+        ) {
+            console.log(this.props);
+            console.log(nextProps);
+            this.fetch();
+        }
+        return true;
+    }
 
     componentDidMount() {
+        this.fetch();
+    }
+
+    fetch = (pageNumber?: number, pageSize?: number, searchValue?: string) => {
         let context = this.context as IApplicationContext;
         context.displayLoadingScreen();
         if (!this.props.parentId) {
-            this.store.get(this.props.pageNumber, this.props.pageSize, this.props.searchValue)
+            this.store.get(pageNumber ?? this.props.pageNumber, pageSize ?? this.props.pageSize, searchValue ?? this.props.searchValue)
                 .then(response => {
                     this.setState({ expanded: true, items: response.Data });
                     this.props.onResponse(response.TotalRowCount);
@@ -136,9 +151,11 @@ class List extends React.Component<IListProps, IListState> {
         return (
             this.state.expanded
                 ? this.state.items.length > 0
-                    ? React.Children.toArray(this.state.items.map(item =>
-                        React.createElement(Item, { item, baseUrl: this.props.baseUrl })
-                    ))
+                    ? React.createElement('ul', {},
+                        React.Children.toArray(this.state.items.map(item =>
+                            React.createElement(Item, { item, baseUrl: this.props.baseUrl, key: item.id })
+                        ))
+                    )
                     : React.createElement('div', {}, 'Список пуст')
                 : null
         );
@@ -169,9 +186,7 @@ class Item extends React.Component<IItemProps, IItemState> {
         }
     }
 
-    private showChildren = (e) => {
-        console.log(e);
-
+    private showChildren = (e: React.MouseEvent) => {
         e.preventDefault();
         if (!this.state.childrenShown) {
             this.setState({ childrenShown: true });
@@ -180,13 +195,12 @@ class Item extends React.Component<IItemProps, IItemState> {
 
     render() {
         return (
-            React.createElement('ul', { style: { display: 'flex', flexDirection: 'column' } },
-                React.createElement('li', {},
-                    React.createElement('a', { href: '', onClick: this.showChildren }, this.props.item.name),
-                    this.state.childrenShown
-                        ? React.createElement(List, { parentId: this.props.item.id, baseUrl: this.props.baseUrl })
-                        : null
-                ))
+            React.createElement('li', {},
+                React.createElement('a', { href: '', onClick: this.showChildren }, this.props.item.name),
+                this.state.childrenShown
+                    ? React.createElement(List, { parentId: this.props.item.id, baseUrl: this.props.baseUrl })
+                    : null
+            )
         );
     }
 }

@@ -51,7 +51,7 @@ export class App extends React.PureComponent<{}, IAppState> {
     // MAIN MENU
     return (
       React.createElement(APPLICATION_CONTEXT.Provider, { value: this.applicationContext },
-        React.createElement(RouteViewer2, { sectionComponentConfiguration: { baseUrl: '' } })
+        React.createElement(RouteViewer2, { sectionComponentConfiguration: { baseUrl: 'qweqwe' } })
         // React.createElement(MenuEditor)
         // React.createElement(RouteViewer, { sectionComponentConfiguration: {} })
         // React.createElement(MainMenuEditor, {})
