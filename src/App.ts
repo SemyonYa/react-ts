@@ -16,6 +16,7 @@ import { MainMenuEditor } from './components/MainMenuEditor';
 import { MenusManager } from './components/MenusManager';
 import { RouteViewer2 } from './components/RouteViewer2';
 import { RouteViewer } from './components/RouteViewer';
+import { TemplatesManager } from './components/TemplatesManager';
 
 interface IAppState {
   expression: string;
@@ -51,7 +52,7 @@ export class App extends React.PureComponent<{}, IAppState> {
     // MAIN MENU
     return (
       React.createElement(APPLICATION_CONTEXT.Provider, { value: this.applicationContext },
-        React.createElement(RouteViewer2, { sectionComponentConfiguration: { baseUrl: 'qweqwe' } })
+        React.createElement(TemplatesManager, { baseUrl: 'qweqwe' })
         // React.createElement(MenuEditor)
         // React.createElement(RouteViewer, { sectionComponentConfiguration: {} })
         // React.createElement(MainMenuEditor, {})
