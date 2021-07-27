@@ -1,31 +1,25 @@
 import React, { ChangeEvent } from "react";
-import { Pagination } from "../components/Pagination";
 import { APPLICATION_CONTEXT, IApplicationContext } from "../context/IApplicationContext";
 import { NavigationMenuDTO } from "../models/NavigationMenuDTO";
-import { MenuStore } from "../store/MenuStore";
-
-const store = new MenuStore();
+import { MenuEditingService } from "../store/MenuEditingService";
 
 interface IMenuEditorProps {
-
+    baseUrl: string;
 }
 
 interface IMenuEditorState {
     items: NavigationMenuDTO[];
     isCreate: boolean;
-    pageNumber: number;
-    pageSize: number;
 }
 
 export class MenuEditor extends React.Component<IMenuEditorProps, IMenuEditorState> {
-
+    store: MenuEditingService;
     constructor(props: IMenuEditorProps) {
         super(props);
+        this.store = new MenuEditingService(props.baseUrl);
         this.state = {
             items: [],
-            isCreate: false,
-            pageNumber: 1,
-            pageSize: 10
+            isCreate: false
         }
     }
 
@@ -36,7 +30,7 @@ export class MenuEditor extends React.Component<IMenuEditorProps, IMenuEditorSta
     private fetch = () => {
         let context = this.context as IApplicationContext;
         context.displayLoadingScreen();
-        store.get()
+        this.store.get()
             .then(
                 items => {
                     this.setState({ items });
@@ -57,11 +51,10 @@ export class MenuEditor extends React.Component<IMenuEditorProps, IMenuEditorSta
     private saveItem = (name: string) => {
         let context = this.context as IApplicationContext;
         context.displayLoadingScreen();
-        store.create({ name } as NavigationMenuDTO)
+        this.store.create({ name } as NavigationMenuDTO)
             .then(() => {
                 this.hideCreate();
-                // this.fetch();
-                context.hideLoadingScreen();
+                this.fetch();
             })
             .catch(context.contextController.setError)
     }
@@ -69,9 +62,9 @@ export class MenuEditor extends React.Component<IMenuEditorProps, IMenuEditorSta
     private deleteItem = (id: string) => {
         let context = this.context as IApplicationContext;
         context.displayLoadingScreen();
-        store.delete(id)
+        this.store.delete(id)
             .then(() => {
-                context.hideLoadingScreen();
+                this.fetch();
             })
             .catch(context.contextController.setError);
     }
@@ -79,7 +72,6 @@ export class MenuEditor extends React.Component<IMenuEditorProps, IMenuEditorSta
     render() {
         return (
             React.createElement('div', { style: { display: 'flex', flexDirection: 'column', alignItems: 'flex-start' } },
-                React.createElement('input', { placeholder: 'Найти' }),
                 !this.state.isCreate
                     ? React.createElement('button', { onClick: this.showCreate }, 'Добавить секцию')
                     : React.createElement(Create, { onSave: this.saveItem }),
@@ -87,10 +79,7 @@ export class MenuEditor extends React.Component<IMenuEditorProps, IMenuEditorSta
                     this.state.items.map(item =>
                         React.createElement(Item, { item, onDelete: this.deleteItem })
                     )
-                ),
-                // TODO: real data
-                React.createElement(Pagination, { pageNumber: this.state.pageNumber, pageQty: 2, onChange: null }),
-                React.createElement('input', {type: 'number', value: this.state.pageSize})
+                )
             )
         );
     }
@@ -166,7 +155,7 @@ class Create extends React.Component<ICreateProps, ICreateState> {
     render() {
         return (
             React.createElement('div', { style: { display: 'flex' } },
-                React.createElement('input', { value: this.state.name, onChange: this.changeName }),
+                React.createElement('input', { value: this.state.name, onChange: this.changeName, autoFocus: true }),
                 React.createElement('button', { type: 'button', onClick: this.save }, 'Сохранить')
             )
         );
