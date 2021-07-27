@@ -39,17 +39,9 @@ interface IPageProps {
 class Page extends React.Component<IPageProps> {
     render() {
         return (
-            React.createElement(
-                'span',
-                {
-                    onClick: () => this.props.onClick(this.props.page),
-                    style: {
-                        fontWeight: this.props.isActive ? '800' : '400',
-                        cursor: 'pointer'
-                    }
-                },
-                this.props.page
-            )
+            this.props.isActive
+                ? React.createElement('span', { style: { fontWeight: '800' } }, this.props.page)
+                : React.createElement('a', { onClick: () => this.props.onClick(this.props.page), style: { fontWeight: '400', cursor: 'pointer' } }, this.props.page)
         );
     }
 }
