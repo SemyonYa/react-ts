@@ -8,9 +8,9 @@ interface IPaginationProps {
 
 export class Pagination extends React.PureComponent<IPaginationProps> {
 
-    private onChange = (page: number) => {
-        if (this.props.pageNumber !== page) {
-            this.props.onChange(page);
+    private onChange = (pageNumber: number) => {
+        if (this.props.pageNumber !== pageNumber) {
+            this.props.onChange(pageNumber);
         }
     }
 
@@ -18,8 +18,8 @@ export class Pagination extends React.PureComponent<IPaginationProps> {
         let pages: number[] = Array(this.props.pageQty).fill(0).map((_, i) => i + 1);
         return (
             React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '1rem' } },
-                ...React.Children.toArray(pages.map(page =>
-                    React.createElement(Page, { page, isActive: page === this.props.pageNumber, onClick: this.onChange })
+                ...React.Children.toArray(pages.map(pageNumber =>
+                    React.createElement(Page, { pageNumber: pageNumber, isActive: pageNumber === this.props.pageNumber, onClick: this.onChange })
                 ))
             )
         );
@@ -31,17 +31,23 @@ export class Pagination extends React.PureComponent<IPaginationProps> {
 ///
 
 interface IPageProps {
-    page: number;
+    pageNumber: number;
     isActive: boolean;
     onClick(page: number): void;
 }
 
 class Page extends React.Component<IPageProps> {
+
+    go = (e: React.MouseEvent) => {
+        e.preventDefault();
+        this.props.onClick(this.props.pageNumber)
+    }
+
     render() {
         return (
             this.props.isActive
-                ? React.createElement('span', { style: { fontWeight: '800' } }, this.props.page)
-                : React.createElement('a', { onClick: () => this.props.onClick(this.props.page), style: { fontWeight: '400', cursor: 'pointer' } }, this.props.page)
+                ? React.createElement('span', { style: { fontWeight: '800' } }, this.props.pageNumber)
+                : React.createElement('a', { href: '', onClick: this.go, style: { fontWeight: '400' } }, this.props.pageNumber)
         );
     }
 }

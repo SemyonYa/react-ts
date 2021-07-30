@@ -76,20 +76,20 @@ export class RouteStore {
                     {
                         Data: [
                             {
-                                id: '1', name: 'Route 1', isPage: false, children: [
+                                id: search + '1', name: 'Route 1', isPage: false, children: [
                                     {
-                                        id: '1-1', name: 'Route 2', isPage: false, children: [
-                                            { id: '1-1-1', name: `${search} - third level`, isPage: false, children: [] } as RoutePartDetailsDTO,
+                                        id: search + '1-1', name: 'Route 2', isPage: false, children: [
+                                            { id: search + '1-1-1', name: `${search} - third level`, isPage: false, children: [] } as RoutePartDetailsDTO,
                                         ]
                                     } as RoutePartDetailsDTO,
                                 ]
                             } as RoutePartDetailsDTO,
                             {
-                                id: '2', name: 'Route 2', isPage: false, children: [
-                                    { id: '2-1', name: `${search} - second level`, isPage: false, children: [] } as RoutePartDetailsDTO,
+                                id: search + '2', name: 'Route 2', isPage: false, children: [
+                                    { id: search + '2-1', name: `${search} - second level`, isPage: false, children: [] } as RoutePartDetailsDTO,
                                 ]
                             } as RoutePartDetailsDTO,
-                            { id: '3', name: `${search} - top level`, isPage: false, children: [] } as RoutePartDetailsDTO,
+                            { id: search + '3', name: `${search} - top level`, isPage: false, children: [] } as RoutePartDetailsDTO,
                         ],
                         TotalRowCount: 10
                     }

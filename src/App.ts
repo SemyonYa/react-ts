@@ -1,22 +1,13 @@
 import './App.css';
 import React from 'react';
-// import { RouteEditor } from './components/RouteEditor';
 import { RoutePartDTO } from './models/RoutePartDTO';
 import { RouteParameterDTO } from './models/RouteParameterDTO';
-// import { ExpressionBuilder } from './components/ExpressionBuilder';
 import { Fake } from './models/Fake';
-// import { AdminTemplate } from './components/AdminTemplate';
 import { ILayoutProps } from './models/ILayoutProps';
 import { MenuStore } from './models/MenuStore';
-// import { RouteViewer } from './components/RouteViewer';
-import { MainMenu } from './components/MainMenu';
 import { APPLICATION_CONTEXT, IApplicationContext } from './context/IApplicationContext';
-import { MainMenuEditor } from './components/MainMenuEditor';
-// import { RouteViewer } from './components/RouteViewer';
-import { MenusManager } from './components/MenusManager';
 import { RouteViewer2 } from './components/RouteViewer2';
-import { RouteViewer } from './components/RouteViewer';
-import { TemplatesManager } from './components/TemplatesManager';
+import { MenusManager } from './components/MenusManager';
 
 interface IAppState {
   expression: string;
@@ -52,7 +43,8 @@ export class App extends React.PureComponent<{}, IAppState> {
     // MAIN MENU
     return (
       React.createElement(APPLICATION_CONTEXT.Provider, { value: this.applicationContext },
-        React.createElement(TemplatesManager, { baseUrl: 'qweqwe' })
+        React.createElement(MenusManager, { baseUrl: '' })
+        // React.createElement(RouteViewer2, { sectionComponentConfiguration: { baseUrl: 'qweqwe' } })
         // React.createElement(MenuEditor)
         // React.createElement(RouteViewer, { sectionComponentConfiguration: {} })
         // React.createElement(MainMenuEditor, {})

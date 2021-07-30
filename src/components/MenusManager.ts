@@ -75,9 +75,11 @@ export class MenusManager extends React.Component<IMenusManagerProps, IMenusMana
                 !this.state.isCreate
                     ? React.createElement('button', { onClick: this.showCreate }, 'Добавить секцию')
                     : React.createElement(Create, { onSave: this.saveItem }),
-                React.Children.toArray(
-                    this.state.items.map(item =>
-                        React.createElement(Item, { item, onDelete: this.deleteItem })
+                React.createElement('ul', {},
+                    React.Children.toArray(
+                        this.state.items.map(item =>
+                            React.createElement(Item, { item, onDelete: this.deleteItem })
+                        )
                     )
                 )
             )
@@ -114,10 +116,18 @@ class Item extends React.Component<IItemProps, IItemState> {
         this.props.onDelete(this.props.item.id);
     }
 
+    go = (e: React.MouseEvent) => {
+        e.preventDefault();
+        // TODO: real link
+        window.location.href = `/go/to/${this.props.item.id}`;
+    }
+
     render() {
         return (
             React.createElement('li', { onMouseEnter: this.showDeleteBtn, onMouseLeave: this.hideDeleteBtn },
-                this.props.item.name,
+                React.createElement('a', { href: '', onClick: this.go },
+                    this.props.item.name,
+                ),
                 this.state.isHover
                     ? React.createElement('button', { onClick: this.delete }, 'x')
                     : null

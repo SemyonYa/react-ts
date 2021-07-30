@@ -4,6 +4,12 @@ import { RoutePartDetailsDTO } from '../models/RoutePartDetailsDTO';
 import { RouteStore } from '../store/RouteStore';
 import { Pagination } from './Pagination';
 
+/// ??? 
+/// ??? При поиске показывать children
+/// ??? search input - отдельный компонент со своим состоянием
+/// ??? 
+/// ??? 
+
 interface IRouteViewerProps {
     sectionComponentConfiguration: any
 }
@@ -111,7 +117,7 @@ class List extends React.Component<IListProps, IListState> {
         }
     }
 
-    shouldComponentUpdate(nextProps: IListProps, nextState: IListState, nextContext: any) {
+    shouldComponentUpdate(nextProps: IListProps, _: IListState, __: any) {
         if (
             this.props.pageNumber !== nextProps.pageNumber ||
             this.props.pageSize !== nextProps.pageSize ||
@@ -119,12 +125,14 @@ class List extends React.Component<IListProps, IListState> {
         ) {
             console.log(this.props);
             console.log(nextProps);
-            this.fetch();
+            this.fetch(nextProps.pageNumber, nextProps.pageSize, nextProps.searchValue);
         }
         return true;
     }
 
     componentDidMount() {
+        console.log('did mount');
+
         this.fetch();
     }
 
@@ -148,6 +156,7 @@ class List extends React.Component<IListProps, IListState> {
     }
 
     render() {
+        console.log("🚀 ~ file: RouteViewer2.ts ~ line 187 ~ List ~ render ~ this.state.items", this.state.items)
         return (
             this.state.expanded
                 ? this.state.items.length > 0
