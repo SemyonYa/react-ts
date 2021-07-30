@@ -106,10 +106,12 @@ export class Menu extends React.Component<IMenuProps, IMenuState> {
     componentDidMount() {
         this.setState({ status: FetchStatus.InProgress });
         // TODO: replace method
-        this.props.layoutProps.menuStore._items(this.props.layoutProps.pageId)
+        this.props.layoutProps.menuStore.getCurrentUser(this.props.layoutProps.pageId)
             .then(
                 (items) => {
-                    this.buildItemsAsTtee(items)
+                    // TODO: new MenuItemDTO2
+                    this.buildItemsAsTtee([])
+                    // this.buildItemsAsTtee(items)
                     if (this.mounted)
                         this.setState({ status: FetchStatus.Fetched })
 

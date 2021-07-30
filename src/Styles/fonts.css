@@ -1,0 +1,10 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,500,700,800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+@font-face {
+    font-family: 'CourierPrime-Regular';
+    src: url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+    /* src: url('/assets/fonts/CourierPrime-Regular.eot');
+    src: local('Courier Prime'), url('/assets/fonts/CourierPrime-Regular.eot?#iefix') format('embedded-opentype'), url('/assets/fonts/CourierPrime-Regular.woff') format('woff'), url('/assets/fonts/CourierPrime-Regular.ttf') format('truetype'); */
+    font-weight: 400;
+    unicode-range: U+30-39;
+}

@@ -1,4 +1,3 @@
-import './App.css';
 import React from 'react';
 import { RoutePartDTO } from './models/RoutePartDTO';
 import { RouteParameterDTO } from './models/RouteParameterDTO';
@@ -9,6 +8,7 @@ import { APPLICATION_CONTEXT, IApplicationContext } from './context/IApplication
 import { RouteViewer2 } from './components/RouteViewer2';
 import { MenusManager } from './components/MenusManager';
 import { Alignment, Direction, FlexMarkup } from './components/FlexMarkup';
+import { Layout } from './components/Layout';
 
 interface IAppState {
   expression: string;
@@ -44,10 +44,17 @@ export class App extends React.PureComponent<{}, IAppState> {
     // MAIN MENU
     return (
       React.createElement(APPLICATION_CONTEXT.Provider, { value: this.applicationContext },
-        React.createElement(FlexMarkup, { alignment: Alignment.SpaceAround, direction: Direction.Column },
-          React.createElement('div', { style: { border: 'solid 1px darkred' } }, 'qwdqdgahsd'),
-          React.createElement('div', { style: { border: 'solid 1px darkred' } }, 'gahsd'),
-          React.createElement('div', { style: { border: 'solid 1px darkred' } }, 'lclaisdcasdbcauysdcouyasdovgahsd'),
+        React.createElement(Layout, { pageId: 0, menuStore: new MenuStore('http://') },
+          React.createElement(FlexMarkup, { alignment: Alignment.SpaceAround, direction: Direction.Column },
+            React.createElement(FlexMarkup, { alignment: Alignment.SpaceAround, direction: Direction.Row },
+              React.createElement('div', { style: { backgroundColor: '#E5EDF5', borderRadius: '4px', boxShadow: 'inset 0px 2px 4px 0 rgba(0, 0, 0, .15)', padding: '25px', marginRight: '40px' } }, this.lorem1),
+              React.createElement('div', { style: { backgroundColor: '#E5EDF5', borderRadius: '4px', boxShadow: 'inset 0px 2px 4px 0 rgba(0, 0, 0, .15)', padding: '25px' } }, this.lorem2),
+            ),
+            React.createElement('h2', {}, 'My calculation session'),
+            React.createElement('div', { style: { backgroundColor: '#E5EDF5', borderRadius: '4px', boxShadow: 'inset 0px 2px 4px 0 rgba(0, 0, 0, .15)', padding: '25px' } }, this.lorem1),
+            React.createElement('h2', {}, 'Other calculation sessions'),
+            React.createElement('div', { style: { backgroundColor: '#E5EDF5', borderRadius: '4px', boxShadow: 'inset 0px 2px 4px 0 rgba(0, 0, 0, .15)', padding: '25px' } }, this.lorem2),
+          )
         )
         // React.createElement(MenusManager, { baseUrl: '' })
         // React.createElement(RouteViewer2, { sectionComponentConfiguration: { baseUrl: 'qweqwe' } })
@@ -128,4 +135,18 @@ export class App extends React.PureComponent<{}, IAppState> {
   onExpressionChanged(expression: string) {
     this.setState({ expression });
   }
+
+  private lorem1 = `
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Quam quasi accusamus, exercitationem perferendis cum excepturi
+    blanditiis aperiam iusto, culpa tempora sapiente earum. Necessitatibus consequuntur, est sit natus temporibus assumenda
+    exercitationem?
+  `;
+
+  private lorem2 = `
+    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quasi earum aspernatur inventore tempora eum! Qui fugit
+    corporis voluptatibus alias at totam exercitationem et doloribus, libero nihil. Sequi dolorem odio magni. \n
+    Assumenda tempora perspiciatis deserunt dolor esse voluptatum quos rem, doloribus excepturi molestiae non nulla
+    repellendus nesciunt iste voluptates accusamus quo, minima id in sunt. Alias molestias asperiores possimus doloribus
+    mollitia.
+  `;
 }
