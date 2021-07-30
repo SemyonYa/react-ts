@@ -9,6 +9,7 @@ import { APPLICATION_CONTEXT, IApplicationContext } from './context/IApplication
 import { RouteViewer2 } from './components/RouteViewer2';
 import { MenusManager } from './components/MenusManager';
 import { Alignment, Direction, FlexMarkup } from './components/FlexMarkup';
+import { Checkbox } from './components/Checkbox';
 
 interface IAppState {
   expression: string;
@@ -45,6 +46,7 @@ export class App extends React.PureComponent<{}, IAppState> {
     return (
       React.createElement(APPLICATION_CONTEXT.Provider, { value: this.applicationContext },
         React.createElement(FlexMarkup, { alignment: Alignment.SpaceAround, direction: Direction.Column },
+          React.createElement(Checkbox, { onChange: () => { } }),
           React.createElement('div', { style: { border: 'solid 1px darkred' } }, 'qwdqdgahsd'),
           React.createElement('div', { style: { border: 'solid 1px darkred' } }, 'gahsd'),
           React.createElement('div', { style: { border: 'solid 1px darkred' } }, 'lclaisdcasdbcauysdcouyasdovgahsd'),
