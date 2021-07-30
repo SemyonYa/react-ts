@@ -44,7 +44,7 @@ export class Layout extends React.Component<ILayoutProps, ILayoutState> {
                         React.createElement('img', { src: logo, alt: 'eurochem' })
                     ),
                     // TODO: 
-                    React.createElement(MenuItem, { name: 'Home', iconSrc: 0 === this.props.pageId ? fakeActive : fake, isActive: 0 === this.props.pageId }),
+                    React.createElement(MenuItem, { name: 'Home', iconSrc: 0 === this.props.pageId ? homeActiveIcon : homeIcon, isActive: 0 === this.props.pageId }),
                     React.createElement('div', { className: 'nav--menu' },
                         React.createElement('div', { className: 'nav--menu-title' },
                             React.createElement('span', {}, 'Menu'),
