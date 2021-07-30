@@ -9,6 +9,7 @@ import { RouteViewer2 } from './components/RouteViewer2';
 import { MenusManager } from './components/MenusManager';
 import { Alignment, Direction, FlexMarkup } from './components/FlexMarkup';
 import { Layout } from './components/Layout';
+import { Checkbox } from './components/Checkbox';
 
 interface IAppState {
   expression: string;
