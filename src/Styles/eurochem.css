@@ -11,9 +11,8 @@
 body {
     min-height: 100vh;
     background-color: var(--bg);
-    overflow-x: none;
+    overflow-x: hidden;
 }
-
 
 /* NAVBAR */
 
@@ -60,7 +59,7 @@ nav {
 }
 
 .nav--menu-item:hover {
-    background-color: rgba(0, 0, 0, .06);
+    background-color: rgba(0, 0, 0, 0.06);
 }
 
 .nav--menu-item.active {
@@ -95,9 +94,8 @@ nav {
 }
 
 .nav--menu-title img:hover {
-    box-shadow: 0 0 4px 0 rgba(0, 0, 0, .12);
+    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.12);
 }
-
 
 /* BODY */
 

@@ -10,10 +10,12 @@ import { MenusManager } from './components/MenusManager';
 import { Alignment, Direction, FlexMarkup } from './components/FlexMarkup';
 import { Layout } from './components/Layout';
 import { Checkbox } from './components/Checkbox';
+import { PopupWindow } from './components/PopupWindow';
 
 interface IAppState {
   expression: string;
   pageNumber: number;
+  modalShown: boolean;
 }
 
 export class App extends React.PureComponent<{}, IAppState> {
@@ -34,10 +36,19 @@ export class App extends React.PureComponent<{}, IAppState> {
       hideLoadingScreen: () => { console.log('hideLoadingScreen'); }
     }
     // this.fake = new Fake();
-    // this.state = {
-    //   expression: '( 1 + age ) > 34',
-    //   pageNumber: 1
-    // };
+    this.state = {
+      expression: '( 1 + age ) > 34',
+      pageNumber: 1,
+      modalShown: false
+    };
+  }
+
+  private showModal = () => {
+    this.setState({ modalShown: true });
+  }
+
+  private hideModal = () => {
+    this.setState({ modalShown: false });
   }
 
   render() {
@@ -52,11 +63,22 @@ export class App extends React.PureComponent<{}, IAppState> {
               React.createElement('div', { style: { backgroundColor: '#E5EDF5', borderRadius: '4px', boxShadow: 'inset 0px 2px 4px 0 rgba(0, 0, 0, .15)', padding: '25px' } }, this.lorem2),
             ),
             React.createElement('h2', {}, 'My calculation session'),
+            React.createElement('button', { onClick: this.showModal, style: { margin: '10px', maxWidth: '140px' } }, 'SHOW MODAL'),
             React.createElement('div', { style: { backgroundColor: '#E5EDF5', borderRadius: '4px', boxShadow: 'inset 0px 2px 4px 0 rgba(0, 0, 0, .15)', padding: '25px' } }, this.lorem1),
             React.createElement('h2', {}, 'Other calculation sessions'),
             React.createElement('div', { style: { backgroundColor: '#E5EDF5', borderRadius: '4px', boxShadow: 'inset 0px 2px 4px 0 rgba(0, 0, 0, .15)', padding: '25px' } }, this.lorem2),
           )
-        )
+        ),
+        this.state.modalShown
+          ? React.createElement(PopupWindow, { onClose: this.hideModal },
+            React.createElement('h3', {}, 'Modal title'),
+            React.createElement('p', {}, this.lorem2),
+            React.createElement('p', {}, this.lorem1),
+            React.createElement('p', {}, this.lorem2),
+            React.createElement('p', {}, this.lorem1),
+            React.createElement('p', {}, this.lorem2),
+          )
+          : null
         // React.createElement(MenusManager, { baseUrl: '' })
         // React.createElement(RouteViewer2, { sectionComponentConfiguration: { baseUrl: 'qweqwe' } })
         // React.createElement(MenuEditor)
