@@ -10,6 +10,12 @@ export class PopupWindow extends React.Component<IPopupWindowProps> {
         document.querySelector('body').style.overflow = 'hidden';
     }
 
+    private backgroundCLick = (e: React.MouseEvent) => {
+        if (e.target['id'] === 'popup-window-background') {
+            this.close();
+        }
+    }
+
     private close = () => {
         document.querySelector('body').style.overflow = 'hidden auto';
         this.props.onClose();
@@ -17,11 +23,12 @@ export class PopupWindow extends React.Component<IPopupWindowProps> {
 
     render() {
         return [
-            React.createElement('div', { onClick: this.close, key: 'back', style: this.styles.back }),
-            React.createElement('div', { key: 'modal', style: this.styles.modal },
-                React.createElement('div', { style: this.styles.modalBody }, this.props.children),
-                React.createElement('button', { onClick: this.close, style: this.styles.closeBtn }, 'close')
-            )
+            React.createElement('div', { onClick: this.backgroundCLick, key: 'back', style: this.styles.back, id: 'popup-window-background' },
+                React.createElement('div', { key: 'modal', style: this.styles.modal },
+                    React.createElement('div', { style: this.styles.modalBody }, this.props.children),
+                    React.createElement('button', { onClick: this.close, style: this.styles.closeBtn }, 'close')
+                )
+            ),
         ];
     }
 
@@ -32,24 +39,20 @@ export class PopupWindow extends React.Component<IPopupWindowProps> {
             right: 0,
             bottom: 0,
             left: 0,
-            backgroundColor: 'rgba(0,0,0,.24)'
+            backgroundColor: 'rgba(0,0,0,.24)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+            padding: '40px 20%',
+            overflowY: 'auto'
         },
         modal: {
-            position: 'fixed',
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
             backgroundColor: 'white',
-            width: '50%',
-            minHeight: '50vh',
-            margin: '40px auto',
             display: 'flex',
-            flexDirection: 'column'
+            flexDirection: 'column',
         },
         modalBody: {
             flex: '1 1 0',
-            overflowY: 'auto'
         },
         closeBtn: {
             border: 'none',

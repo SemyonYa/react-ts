@@ -63,7 +63,7 @@ export class App extends React.PureComponent<{}, IAppState> {
               React.createElement('div', { style: { backgroundColor: '#E5EDF5', borderRadius: '4px', boxShadow: 'inset 0px 2px 4px 0 rgba(0, 0, 0, .15)', padding: '25px' } }, this.lorem2),
             ),
             React.createElement('h2', {}, 'My calculation session'),
-            React.createElement('button', { onClick: this.showModal, style: { margin: '10px', maxWidth: '140px' } }, 'SHOW MODAL'),
+            React.createElement('button', { onClick: this.showModal, style: { margin: '10px 0', maxWidth: '140px' } }, 'SHOW MODAL'),
             React.createElement('div', { style: { backgroundColor: '#E5EDF5', borderRadius: '4px', boxShadow: 'inset 0px 2px 4px 0 rgba(0, 0, 0, .15)', padding: '25px' } }, this.lorem1),
             React.createElement('h2', {}, 'Other calculation sessions'),
             React.createElement('div', {},
@@ -80,6 +80,11 @@ export class App extends React.PureComponent<{}, IAppState> {
             React.createElement('p', {}, this.lorem1),
             React.createElement('p', {}, this.lorem2),
             React.createElement('p', {}, this.lorem1),
+            React.createElement('p', {}, this.lorem2),
+            React.createElement('p', {}, this.lorem2),
+            React.createElement('p', {}, this.lorem2),
+            React.createElement('p', {}, this.lorem2),
+            React.createElement('p', {}, this.lorem2),
             React.createElement('p', {}, this.lorem2),
           )
           : null
