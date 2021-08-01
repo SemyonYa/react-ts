@@ -65,7 +65,7 @@ export class App extends React.PureComponent<{}, IAppState> {
             ),
             React.createElement('h2', {}, 'My calculation session'),
             React.createElement('div', { style: { margin: '10px 0' } },
-              React.createElement(Button, { onClick: this.showModal }, 'SHOW MODAL')
+              React.createElement(Button, { onClick: this.showModal, text: 'SHOW MODAL' }, )
             ),
             React.createElement('div', { style: { backgroundColor: '#E5EDF5', borderRadius: '4px', boxShadow: 'inset 0px 2px 4px 0 rgba(0, 0, 0, .15)', padding: '25px' } }, this.lorem1),
             React.createElement('h2', {}, 'Other calculation sessions'),
