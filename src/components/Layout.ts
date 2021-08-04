@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { ILayoutProps } from '../models/ILayoutProps';
-import { MainMenu } from './MainMenu';
 import { APPLICATION_CONTEXT, IApplicationContext } from '../context/IApplicationContext';
 import { MenuItemDTO } from '../models/MenuItemDTO2';
 

@@ -7,13 +7,15 @@ import { MenuStore } from './models/MenuStore';
 import { APPLICATION_CONTEXT, IApplicationContext } from './context/IApplicationContext';
 import { RouteViewer2 } from './components/RouteViewer2';
 import { MenusManager } from './components/MenusManager';
-import { Alignment, Direction, FlexMarkup } from './components/FlexMarkup';
+import { Alignment, Direction, Markup } from './components/Markup';
 import { Layout } from './components/Layout';
 import { Checkbox } from './components/Checkbox';
 import { PopupWindow } from './components/PopupWindow';
 import { ToggleButton } from './components/ToggleButton';
 import { DropDownList } from './components/DropDownList';
 import { ListStore } from './store/ListStore';
+import { SubmitButton } from './components/SubmitButton';
+import { IViewModelContext, VIEW_MODEL_CONTEXT } from './context/IViewModelContext';
 
 interface IAppState {
   expression: string;
@@ -23,6 +25,7 @@ interface IAppState {
 
 export class App extends React.PureComponent<{}, IAppState> {
   private applicationContext: IApplicationContext;
+  private viewModelContext: IViewModelContext;
   fake: Fake;
   constructor(props: any) {
     super(props);
@@ -38,6 +41,19 @@ export class App extends React.PureComponent<{}, IAppState> {
       displayLoadingScreen: () => { console.log('displayLoadingScreen'); },
       hideLoadingScreen: () => { console.log('hideLoadingScreen'); }
     }
+
+    this.viewModelContext = {
+      data: {},
+      getExpression: (expression: string) => { },
+      getValue: (valuePath: string) => { },
+      contextController: {
+        updateModel: (model: any) => { },
+        updateValue: (path: string, value: any) => { },
+        executeMethod: (name: string) => {
+          console.log('executeMethod', name);
+        },
+      }
+    };
     // this.fake = new Fake();
     this.state = {
       expression: '( 1 + age ) > 34',
@@ -60,8 +76,8 @@ export class App extends React.PureComponent<{}, IAppState> {
     return (
       React.createElement(APPLICATION_CONTEXT.Provider, { value: this.applicationContext },
         React.createElement(Layout, { pageId: 0, menuStore: new MenuStore('http://') },
-          React.createElement(FlexMarkup, { alignment: Alignment.SpaceAround, direction: Direction.Column },
-            React.createElement(FlexMarkup, { alignment: Alignment.SpaceAround, direction: Direction.Row },
+          React.createElement(Markup, { alignment: Alignment.SpaceAround, direction: Direction.Column },
+            React.createElement(Markup, { alignment: Alignment.SpaceAround, direction: Direction.Row },
               React.createElement('div', { style: { backgroundColor: '#E5EDF5', borderRadius: '4px', boxShadow: 'inset 0px 2px 4px 0 rgba(0, 0, 0, .15)', padding: '25px', marginRight: '40px' } }, this.lorem1),
               React.createElement('div', { style: { backgroundColor: '#E5EDF5', borderRadius: '4px', boxShadow: 'inset 0px 2px 4px 0 rgba(0, 0, 0, .15)', padding: '25px' } }, this.lorem2),
             ),
@@ -82,6 +98,9 @@ export class App extends React.PureComponent<{}, IAppState> {
               React.createElement('span', {}, 'I\'m  God')
             ),
             React.createElement('div', { style: { backgroundColor: '#E5EDF5', borderRadius: '4px', boxShadow: 'inset 0px 2px 4px 0 rgba(0, 0, 0, .15)', padding: '25px' } }, this.lorem2),
+            React.createElement(VIEW_MODEL_CONTEXT.Provider, { value: this.viewModelContext },
+              React.createElement(SubmitButton, { text: 'text', method: 'method' })
+            )
           )
         ),
         this.state.modalShown

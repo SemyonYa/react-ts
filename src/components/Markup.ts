@@ -16,12 +16,12 @@ export enum Direction {
 }
 
 
-interface IFlexMarkupProps {
+interface IMarkupProps {
     direction?: Direction;
     alignment?: Alignment;
 }
 
-export class FlexMarkup extends React.Component<IFlexMarkupProps> {
+export class Markup extends React.Component<IMarkupProps> {
     private alignment: any = {
         [Alignment.Start]: 'flex-start',
         [Alignment.End]: 'flex-end',
