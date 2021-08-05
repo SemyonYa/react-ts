@@ -3,15 +3,15 @@ import { TemplateDTO } from '../../models/TemplateDTO';
 import { TemplateStore } from '../../store/TemplateStore';
 
 export interface IDataBindingEditorProps {
-    template: TemplateDTO;
-    store: TemplateStore;
+    template?: TemplateDTO;
+    store?: TemplateStore;
 }
 
 export interface IDataBindingEditorState {
 
 }
 
-export class IDataBindingEditor extends React.Component<IDataBindingEditorProps, IDataBindingEditorState> {
+export class DataBindingEditor extends React.Component<IDataBindingEditorProps, IDataBindingEditorState> {
 
     constructor(props: IDataBindingEditorProps) {
         super(props);

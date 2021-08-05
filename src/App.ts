@@ -16,6 +16,8 @@ import { DropDownList } from './components/DropDownList';
 import { ListStore } from './store/ListStore';
 import { SubmitButton } from './components/SubmitButton';
 import { IViewModelContext, VIEW_MODEL_CONTEXT } from './context/IViewModelContext';
+import { TextInput } from './components/TextInput';
+import { DataBindingEditor } from './components/_DataBindingEditor.ts/DataBindingEditor';
 
 interface IAppState {
   expression: string;
@@ -71,38 +73,43 @@ export class App extends React.PureComponent<{}, IAppState> {
   }
 
   render() {
-
-    // MAIN MENU
     return (
       React.createElement(APPLICATION_CONTEXT.Provider, { value: this.applicationContext },
-        React.createElement(Layout, { pageId: 0, menuStore: new MenuStore('http://') },
-          React.createElement(Markup, { alignment: Alignment.SpaceAround, direction: Direction.Column },
-            React.createElement(Markup, { alignment: Alignment.SpaceAround, direction: Direction.Row },
-              React.createElement('div', { style: { backgroundColor: '#E5EDF5', borderRadius: '4px', boxShadow: 'inset 0px 2px 4px 0 rgba(0, 0, 0, .15)', padding: '25px', marginRight: '40px' } }, this.lorem1),
-              React.createElement('div', { style: { backgroundColor: '#E5EDF5', borderRadius: '4px', boxShadow: 'inset 0px 2px 4px 0 rgba(0, 0, 0, .15)', padding: '25px' } }, this.lorem2),
-            ),
-            React.createElement('h2', {}, 'My calculation session'),
-            React.createElement('div', { style: { margin: '10px 0' } },
-              React.createElement(DropDownList, { store: new ListStore(), isTable: false })
-            ),
-            React.createElement('div', { style: { margin: '10px 0' } },
-              React.createElement('button', { onClick: this.showModal }, 'SHOW MODAL')
-            ),
-            React.createElement('div', { style: { backgroundColor: '#E5EDF5', borderRadius: '4px', boxShadow: 'inset 0px 2px 4px 0 rgba(0, 0, 0, .15)', padding: '25px' } }, this.lorem1),
-            React.createElement('h2', {}, 'Other calculation sessions'),
-            React.createElement('div', { style: { margin: '10px 0' } },
-              React.createElement(ToggleButton, { model: new Fake(), method: 'toggle', text: 'toggle' },)
-            ),
-            React.createElement('div', {},
-              React.createElement(Checkbox, { onChange: (value) => { console.log(value) } }),
-              React.createElement('span', {}, 'I\'m  God')
-            ),
-            React.createElement('div', { style: { backgroundColor: '#E5EDF5', borderRadius: '4px', boxShadow: 'inset 0px 2px 4px 0 rgba(0, 0, 0, .15)', padding: '25px' } }, this.lorem2),
-            React.createElement(VIEW_MODEL_CONTEXT.Provider, { value: this.viewModelContext },
-              React.createElement(SubmitButton, { text: 'text', method: 'method' })
+        React.createElement(VIEW_MODEL_CONTEXT.Provider, { value: this.viewModelContext },
+          React.createElement(Layout, { pageId: 0, menuStore: new MenuStore('http://') },
+            React.createElement(Markup, { alignment: Alignment.SpaceAround, direction: Direction.Column },
+              React.createElement(DataBindingEditor, {},)
             )
           )
         ),
+        // React.createElement(Layout, { pageId: 0, menuStore: new MenuStore('http://') },
+        //   React.createElement(Markup, { alignment: Alignment.SpaceAround, direction: Direction.Column },
+        //     React.createElement(Markup, { alignment: Alignment.SpaceAround, direction: Direction.Row },
+        //       React.createElement('div', { style: { backgroundColor: '#E5EDF5', borderRadius: '4px', boxShadow: 'inset 0px 2px 4px 0 rgba(0, 0, 0, .15)', padding: '25px', marginRight: '40px' } }, this.lorem1),
+        //       React.createElement('div', { style: { backgroundColor: '#E5EDF5', borderRadius: '4px', boxShadow: 'inset 0px 2px 4px 0 rgba(0, 0, 0, .15)', padding: '25px' } }, this.lorem2),
+        //     ),
+        //     React.createElement('h2', {}, 'My calculation session'),
+        //     React.createElement('div', { style: { margin: '10px 0' } },
+        //       React.createElement(DropDownList, { store: new ListStore(), isTable: false })
+        //     ),
+        //     React.createElement('div', { style: { margin: '10px 0' } },
+        //       React.createElement('button', { onClick: this.showModal }, 'SHOW MODAL')
+        //     ),
+        //     React.createElement('div', { style: { backgroundColor: '#E5EDF5', borderRadius: '4px', boxShadow: 'inset 0px 2px 4px 0 rgba(0, 0, 0, .15)', padding: '25px' } }, this.lorem1),
+        //     React.createElement('h2', {}, 'Other calculation sessions'),
+        //     React.createElement('div', { style: { margin: '10px 0' } },
+        //       React.createElement(ToggleButton, { model: new Fake(), method: 'toggle', text: 'toggle' },)
+        //     ),
+        //     React.createElement('div', {},
+        //       React.createElement(Checkbox, { onChange: (value) => { console.log(value) } }),
+        //       React.createElement('span', {}, 'I\'m  God')
+        //     ),
+        //     React.createElement('div', { style: { backgroundColor: '#E5EDF5', borderRadius: '4px', boxShadow: 'inset 0px 2px 4px 0 rgba(0, 0, 0, .15)', padding: '25px' } }, this.lorem2),
+        //     React.createElement(VIEW_MODEL_CONTEXT.Provider, { value: this.viewModelContext },
+        //       React.createElement(SubmitButton, { text: 'text', method: 'method' })
+        //     )
+        //   )
+        // ),
         this.state.modalShown
           ? React.createElement(PopupWindow, { onClose: this.hideModal },
             React.createElement('h3', {}, 'Modal title'),
