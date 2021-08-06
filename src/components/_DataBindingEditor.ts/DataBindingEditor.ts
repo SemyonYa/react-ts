@@ -9,85 +9,116 @@ export interface IDataBindingEditorProps {
 }
 
 export interface IDataBindingEditorState {
-    id: any,
-    isUser: boolean,
-    name: string,
-    id_TemplateUpload: any,
-    uploadTemplate: TemplateDTO,
-    xpos: number,
-    ypos: number,
-    procedureName: string,
-    topRows: number,
-    code: string,
-    codeSQL: string,
-    isCache: boolean,
-    templateFields: TemplateFieldDTO[],
-    conditionObjects: any[],
-    conditionParameters: any[],
-    filtering: any,
-    validation: any,
-    admObject: any,
-    id_DataSource: any,
-    id_TemplateType: string,
-    procedureManager: string,
-    massOperations: any[],
-    massOperationsNoSelection: any[],
-    isSubquery: boolean,
-    isLogChanges: boolean,
-    catalogTemplateForParameters: TemplateDTO[],
-    catalogTemplateForFields: TemplateDTO[],
-    uploadTemplateForTemplates: TemplateDTO[],
-    massOperationParamTemplateForTemplates: TemplateDTO[],
-    subQueryTemplateForTemplates: TemplateDTO[],
-    dataSourceForUserTemplates: TemplateDTO[],
-    tableReferences: any[],
+    template: TemplateDTO
 }
 
 export class DataBindingEditor extends React.Component<IDataBindingEditorProps, IDataBindingEditorState> {
+    private TemplateTypes: { key: string, value: string }[] = [
+        { key: '1', value: 'Источник данных' },
+        { key: '2', value: 'Условие' },
+    ]
+
 
     constructor(props: IDataBindingEditorProps) {
         super(props);
         this.state = {
-            id: null,
-            isUser: null,
-            name: null,
-            id_TemplateUpload: null,
-            uploadTemplate: null,
-            xpos: null,
-            ypos: null,
-            procedureName: null,
-            topRows: null,
-            code: null,
-            codeSQL: null,
-            isCache: null,
-            templateFields: [],
-            conditionObjects: [],
-            conditionParameters: [],
-            filtering: null,
-            validation: null,
-            admObject: null,
-            id_DataSource: null,
-            id_TemplateType: null,
-            procedureManager: null,
-            massOperations: [],
-            massOperationsNoSelection: [],
-            isSubquery: null,
-            isLogChanges: null,
-            catalogTemplateForParameters: [],
-            catalogTemplateForFields: [],
-            uploadTemplateForTemplates: [],
-            massOperationParamTemplateForTemplates: [],
-            subQueryTemplateForTemplates: [],
-            dataSourceForUserTemplates: [],
-            tableReferences: [],
+            template: new TemplateDTO()
         }
+    }
+
+    componentDidMount() {
+
+    }
+
+    private changeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const name = e.target.value;
+        this.setState({ name });
+    }
+
+    private changeCode = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const code = e.target.value;
+        this.setState({ code });
+    }
+
+    private changeTemplateType = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const templateType = e.target.value;
+        this.setState({ id_TemplateType: templateType });
+    }
+
+    private changeDataSource = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const dataSource = e.target.value;
+        this.setState({ id_DataSource: dataSource });
+    }
+
+    private changeProcedureManager = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const procedureManager = e.target.value;
+        this.setState({ procedureManager });
+    }
+    private changeCodeSQL = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const codeSQL = e.target.value;
+        this.setState({ codeSQL });
+    }
+    private changeIsCache = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const isCache = e.target.checked;
+        this.setState({ isCache });
+    }
+
+    // SUBMIT
+    private submit = (e: React.BaseSyntheticEvent) => {
+        e.preventDefault();
+        let newTemplate = new TemplateDTO();
+        for (let key in newTemplate) {
+            newTemplate[key] = this.state[key] ?? this.props.template[key];
+        }
+        console.log(newTemplate);
     }
 
     render() {
         return (
-            React.createElement('div', {},
-                React.createElement('div', {}, 'asdasd')
+            React.createElement('form', { onSubmit: this.submit },
+                React.createElement('h6', {}, 'Источник данных'),
+                this.buildFormItem(
+                    'Название',
+                    React.createElement('input', { value: this.state.name ?? this.props.template?.name ?? '', onChange: this.changeName })
+                ),
+                this.buildFormItem(
+                    'Код уникальный',
+                    React.createElement('input', { value: this.state.code ?? this.props.template?.code ?? '', onChange: this.changeCode })
+                ),
+                this.buildFormItem(
+                    'Тип шаблона',
+                    React.createElement('select', { value: this.state.id_TemplateType ?? this.props.template?.id_TemplateType, onChange: this.changeTemplateType },
+                        React.Children.toArray(this.TemplateTypes.map(o =>
+                            React.createElement('option', { value: o.key }, o.value)
+                        ))
+                    )
+                ),
+                this.buildFormItem(
+                    'Связанный объект данных',
+                    React.createElement('select', { value: this.state.id_TemplateUpload ?? this.props.template?.id_TemplateUpload, onChange: this.changeDataSource })
+                ),
+                this.buildFormItem(
+                    'Процедура-менеджер',
+                    React.createElement('input', { value: this.state.procedureManager ?? this.props.template?.procedureManager ?? '', onChange: this.changeProcedureManager })
+                ),
+                this.buildFormItem(
+                    'SQL',
+                    React.createElement('textarea', { value: this.state.name ?? this.props.template?.name ?? '', onChange: this.changeCodeSQL, rows: 10 })
+                ),
+                this.buildFormItem(
+                    'Использовать кеш',
+                    React.createElement('input', { value: this.state.procedureManager ?? this.props.template?.procedureManager ?? '', onChange: this.changeIsCache, type: 'checkbox' })
+                ),
+
+                React.createElement('button', { type: 'submit' }, 'Сохранить')
             )
+        );
+    }
+
+    private buildFormItem = (label: string, elem: React.ReactNode) => {
+        return React.createElement('div', { style: { display: 'flex', flexDirection: 'column', margin: '.25rem 0' } },
+            React.createElement('label', {}, label),
+            elem
         );
     }
 }
