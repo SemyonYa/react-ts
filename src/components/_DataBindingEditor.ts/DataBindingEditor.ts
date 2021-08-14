@@ -15,7 +15,7 @@ export interface IDataBindingEditorState {
 
 export class DataBindingEditor extends React.Component<IDataBindingEditorProps, IDataBindingEditorState> {
     private TemplateTypes: { key: string, value: string }[] = [
-        { key: '1', value: 'Источник данных' },
+        { key: '1', value: 'Таблица' },
         { key: '2', value: 'Условие' },
     ]
 
@@ -142,12 +142,20 @@ export class DataBindingEditor extends React.Component<IDataBindingEditorProps, 
                     )
                 ),
                 this.state.template.id_TemplateType == '1'
+                    // TODO: toggle
+                    ? this.buildFormItem(
+                        'Работа с параметрами / Работа с SQL',
+                        React.createElement('input', { checked: this.state.isParam ?? false, onChange: this.changeIsParam, type: 'checkbox' })
+                    )
+                    : null,
+                this.state.template.id_TemplateType == '2'
+                    ? this.buildFormItem(
+                        'Фильтры',
+                        React.createElement(Filters)
+                    )
+                    : null,
+                this.state.template.id_TemplateType == '1'
                     ? React.createElement('div', {},
-                        // TODO: toggle
-                        this.buildFormItem(
-                            'Работа с параметрами / Работа с SQL',
-                            React.createElement('input', { checked: this.state.isParam ?? false, onChange: this.changeIsParam, type: 'checkbox' })
-                        ),
                         this.buildFormItem(
                             'Источник данных',
                             React.createElement('select', { value: this.state.template.id_TemplateUpload ?? this.props.template?.id_TemplateUpload, onChange: this.changeDataSource })
@@ -165,61 +173,66 @@ export class DataBindingEditor extends React.Component<IDataBindingEditorProps, 
                             React.createElement('input', { checked: this.state.template.isCache ?? this.props.template?.isCache ?? false, onChange: this.changeIsCache, type: 'checkbox' })
                         ),
                         // TODO: 
-                        this.state.isParam
+                        !this.state.isParam
                             ? this.buildFormItem(
                                 'Процедура-менеджер',
                                 React.createElement('input', { value: this.state.template.procedureManager ?? this.props.template?.procedureManager ?? '', onChange: this.changeProcedureManager })
                             )
-                            : this.buildFormItem(
-                                'Фильтры',
-                                React.createElement(Filters)
-                            ),
-                    )
-                    : null,
+                            : null,
+                    ) : null,
                 this.buildFormItem(
                     'Параметры источника данных',
                     // TODO: 
                     React.createElement(DataSourceParams)
                 ),
-
                 this.state.template.id_TemplateType == '1'
-                    ? this.buildFormItem(
-                        'Колонки источника данных',
-                        React.createElement('div', { style: { display: 'flex' } },
-                            React.createElement('div', { style: { display: 'flex', flexDirection: 'column', flex: '0 0 50%' } },
-                                React.createElement('p', {}, 'Состав отчета'),
-                                React.Children.toArray(
-                                    [1, 2, 3, 4].map(i =>
-                                        React.createElement('div', {}, `${i}. Item #${i}`)
-                                    )),
-                                React.createElement('button', {}, 'Скопировать названия из источника данных')
-                            ),
-                            React.createElement(FieldEditorForm, { field: {} })
+                    ? React.createElement('div', {},
+                        this.state.isParam
+                            ? React.createElement('div', {},
+                                this.buildFormItem(
+                                    'Фильтры отчета',
+                                    React.createElement(Filters)
+                                ),
+                            ) : null,
+                        this.buildFormItem(
+                            'Колонки источника данных',
+                            React.createElement('div', { style: { display: 'flex' } },
+                                React.createElement('div', { style: { display: 'flex', flexDirection: 'column', flex: '0 0 50%' } },
+                                    React.createElement('p', {}, 'Состав отчета'),
+                                    React.Children.toArray(
+                                        [1, 2, 3, 4].map(i =>
+                                            React.createElement('div', {}, `${i}. Item #${i}`)
+                                        )),
+                                    React.createElement('button', {}, 'Скопировать названия из источника данных')
+                                ),
+                                React.createElement(FieldEditorForm, { field: {} })
+                            )
+                        ),
+                        this.buildFormItem(
+                            'Объект-источник',
+                            React.createElement('select', { value: 2, onChange: this.changeObjectSource },
+                                React.Children.toArray([1, 2, 3].map(o =>
+                                    React.createElement('option', { value: o }, o)
+                                ))
+                            )
+                        ),
+                        this.buildFormItem(
+                            'Выберите поле в колонке',
+                            React.createElement('div', { style: { display: 'flex', flexDirection: 'column' } },
+                                React.Children.toArray([1, 2, 3, 4, 5, 6, 7].map(o =>
+                                    React.createElement('option', { value: o },
+                                        `+ field ${o}`
+                                    )
+                                ))
+                            )
                         )
                     )
                     : null,
-                // TODO: 
-                this.buildFormItem(
-                    'Объект-источник',
-                    React.createElement('select', { value: 2, onChange: this.changeObjectSource },
-                        React.Children.toArray([1, 2, 3].map(o =>
-                            React.createElement('option', { value: o }, o)
-                        ))
-                    )
-                ),
-                this.buildFormItem(
-                    'Выберите поле в колонке',
-                    React.createElement('div', { style: { display: 'flex', flexDirection: 'column' } },
-                        React.Children.toArray([1, 2, 3, 4, 5, 6, 7].map(o =>
-                            React.createElement('option', { value: o },
-                                `+ field ${o}`
-                            )
-                        ))
-                    )
-                ),
+
 
                 //SUBMIT
-                React.createElement('button', { type: 'submit' }, 'Сохранить')
+                React.createElement('button', { type: 'submit' }, 'Сохранить'),
+                React.createElement('button', { type: 'button' }, 'Отмена')
             )
         );
     }
@@ -286,9 +299,9 @@ class Filters extends React.Component {
         return (
             React.createElement('div', { style: { display: 'flex', flexDirection: 'column', border: 'solid 1px #ccc' } },
                 React.createElement('div', {},
-                    React.createElement('span', {}, '+'),
-                    React.createElement('span', {}, '-'),
-                    React.createElement('span', {}, '='),
+                    React.createElement('span', {}, '+ '),
+                    React.createElement('span', {}, '- '),
+                    React.createElement('span', {}, '= '),
                     React.createElement('span', {}, '=='),
                 ),
                 React.createElement('div', {},
