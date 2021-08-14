@@ -7,8 +7,8 @@ import { MenuItemDTO } from '../models/MenuItemDTO2';
 
 // svg
 import logo from '../assets/logo.svg';
-import homeIcon from '../assets/icons/home.svg';
-import homeActiveIcon from '../assets/icons/home-active.svg';
+import homeIcon from '../assets/home.svg';
+import homeActiveIcon from '../assets/home-active.svg';
 
 import fake from '../assets/fake.svg';
 import fakeActive from '../assets/fake-active.svg';
@@ -88,6 +88,15 @@ export class Layout extends React.Component<ILayoutProps, ILayoutState> {
         );
     }
 }
+
+export const LayoutFC: React.FunctionComponent<ILayoutProps> = (props) => {
+    //let context = React.useContext(VIEW_MODEL_CONTEXT);
+    //let labelText = context.getExpression(props.settings['label']);
+
+    return React.createElement(Layout, { ...props });
+}
+
+export const ExLayoutDescription = { layout: LayoutFC, cssUrl: '../../../wwwroot/platform/layouts/ex/css/style.css', positionsCount: 1 };
 
 Layout.contextType = APPLICATION_CONTEXT;
 
