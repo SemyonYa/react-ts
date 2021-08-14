@@ -8,7 +8,7 @@ import { APPLICATION_CONTEXT, IApplicationContext } from './context/IApplication
 import { RouteViewer2 } from './components/RouteViewer2';
 import { MenusManager } from './components/MenusManager';
 import { Alignment, Direction, FlexMarkup } from './components/FlexMarkup';
-import { Layout } from './components/Layout';
+import { LayoutFC } from './components/Layout';
 import { Checkbox } from './components/Checkbox';
 import { PopupWindow } from './components/PopupWindow';
 import { ToggleButton } from './components/ToggleButton';
@@ -59,7 +59,7 @@ export class App extends React.PureComponent<{}, IAppState> {
     // MAIN MENU
     return (
       React.createElement(APPLICATION_CONTEXT.Provider, { value: this.applicationContext },
-        React.createElement(Layout, { pageId: 0, menuStore: new MenuStore('http://') },
+        React.createElement(LayoutFC, { pageId: 0, menuStore: new MenuStore('http://') },
           React.createElement(FlexMarkup, { alignment: Alignment.SpaceAround, direction: Direction.Column },
             React.createElement(FlexMarkup, { alignment: Alignment.SpaceAround, direction: Direction.Row },
               React.createElement('div', { style: { backgroundColor: '#E5EDF5', borderRadius: '4px', boxShadow: 'inset 0px 2px 4px 0 rgba(0, 0, 0, .15)', padding: '25px', marginRight: '40px' } }, this.lorem1),
