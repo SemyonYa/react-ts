@@ -1,16 +1,21 @@
 import * as React from 'react';
-import { TemplateDTO } from '../../models/TemplateDTO';
-import { TemplateFieldDTO } from '../../models/TemplateFieldDTO';
+import { CompareLogicDTO } from '../../models/data-binding/CompareLogicDTO';
+import { TemplateDTO } from '../../models/data-binding/TemplateDTO';
 import { TemplateStore } from '../../store/TemplateStore';
+import { ConditionObjectStore } from '../../store/ConditionObjectStore';
+import { ConditionObjectDTO } from '../../models/data-binding/ConditionObjectDTO';
 
 export interface IDataBindingEditorProps {
     template?: TemplateDTO;
-    store?: TemplateStore;
+    templateStore: TemplateStore;
+    conditionObjectStore: ConditionObjectStore;
 }
 
 export interface IDataBindingEditorState {
     template: TemplateDTO,
-    isParam: boolean
+    conditionObjects: ConditionObjectDTO[],
+    isParam: boolean,
+    isSQLTemplateType: boolean
 }
 
 export class DataBindingEditor extends React.Component<IDataBindingEditorProps, IDataBindingEditorState> {
@@ -23,15 +28,21 @@ export class DataBindingEditor extends React.Component<IDataBindingEditorProps, 
     constructor(props: IDataBindingEditorProps) {
         super(props);
         let initialTemplate = new TemplateDTO();
-        initialTemplate.id_TemplateType = '1';
+        initialTemplate.uploadTemplateId = '1';
         this.state = {
             template: initialTemplate,
-            isParam: true
+            conditionObjects: null,
+            isParam: true,
+            isSQLTemplateType: true
         }
     }
 
     componentDidMount() {
-
+        const template = this.props.templateStore.getItem('');
+        console.log("🚀 ~ file: DataBindingEditor.ts ~ line 45 ~ DataBindingEditor ~ componentDidMount ~ template", template)
+        const conditionObjects: ConditionObjectDTO[] = this.props.conditionObjectStore.getAll();
+        console.log("🚀 ~ file: DataBindingEditor.ts ~ line 46 ~ DataBindingEditor ~ componentDidMount ~ conditionObjects", conditionObjects)
+        this.setState({ template, conditionObjects });
     }
 
     private changeName = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,21 +64,22 @@ export class DataBindingEditor extends React.Component<IDataBindingEditorProps, 
     }
 
     private changeTemplateType = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const template = this.state.template;
-        template.id_TemplateType = e.target.value;
-        this.setState({ template });
+        this.setState({ isSQLTemplateType: e.target.value === '1' })
+        // const template = this.state.template;
+        // template.id_TemplateType = e.target.value;
+        // this.setState({ template });
     }
 
-    private changeParamsOrSQL = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const template = this.state.template;
-        // TODO: 
-        // template.id_TemplateType = e.target.value;
-        this.setState({ template });
-    }
+    // private changeParamsOrSQL = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    //     const template = this.state.template;
+    //     // TODO: 
+    //     // template.id_TemplateType = e.target.value;
+    //     this.setState({ template });
+    // }
 
     private changeDataSource = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const template = this.state.template;
-        template.id_DataSource = e.target.value;
+        template.dataSourceId = e.target.value;
         this.setState({ template });
     }
 
@@ -118,55 +130,66 @@ export class DataBindingEditor extends React.Component<IDataBindingEditorProps, 
     }
 
     render() {
+        // let currentTemplate = new TemplateDTO();
+        // for (let key in currentTemplate) {
+        //     currentTemplate[key] = this.state.template[key] ?? (this.props.template ? this.props.template[key] : null);
+        // }
+
         return (
             React.createElement('form', { onSubmit: this.submit },
                 React.createElement('h6', {}, 'Источник данных'),
                 this.buildFormItem(
                     'Название',
-                    React.createElement('input', { value: this.state.template.name ?? this.props.template?.name ?? '', onChange: this.changeName })
+                    React.createElement('input', { value: this.state.template?.name ?? this.props.template?.name ?? '', onChange: this.changeName })
                 ),
                 this.buildFormItem(
                     'Пользовательский',
-                    React.createElement('input', { checked: this.state.template.isUser ?? this.props.template?.isUser ?? false, onChange: this.changeIsUser, type: 'checkbox' })
+                    React.createElement('input', { checked: this.state.template?.isUser ?? this.props.template?.isUser ?? false, disabled: true, onChange: this.changeIsUser, type: 'checkbox' })
                 ),
                 this.buildFormItem(
                     'Код уникальный',
-                    React.createElement('input', { value: this.state.template.code ?? this.props.template?.code ?? '', onChange: this.changeCode })
+                    React.createElement('input', { value: this.state.template?.code ?? this.props.template?.code ?? '', disabled: true, onChange: this.changeCode })
                 ),
                 this.buildFormItem(
                     'Тип источника данных',
-                    React.createElement('select', { value: this.state.template.id_TemplateType ?? this.props.template?.id_TemplateType, onChange: this.changeTemplateType },
+                    React.createElement('select', { value: this.state.isSQLTemplateType ? '1' : '2', onChange: this.changeTemplateType },
                         React.Children.toArray(this.TemplateTypes.map(o =>
                             React.createElement('option', { value: o.key }, o.value)
                         ))
                     )
                 ),
-                this.state.template.id_TemplateType == '1'
+                this.buildFormItem(
+                    'Источник данных',
+                    React.createElement('select', { value: this.state.template.conditionObjects?.length > 0 ? this.state.conditionObjects[0].id : '', onChange: this.changeDataSource },
+                        this.state.conditionObjects?.length > 0
+                            ? React.Children.toArray(this.state.conditionObjects.map(co =>
+                                React.createElement('option', { id: co.id }, co.rusName)))
+                            : null
+                    )
+                ),
+                this.buildFormItem(
+                    'Логгировать изменения по объекту',
+                    React.createElement('input', { checked: this.state.template.isLogChanges ?? this.props.template?.isLogChanges ?? false, onChange: this.changeIsLogChanges, type: 'checkbox' })
+                ),
+                this.state.isSQLTemplateType
                     // TODO: toggle
                     ? this.buildFormItem(
                         'Работа с параметрами / Работа с SQL',
+                        // React.createElement(Switch, { onChange: this.changeIsParam })
                         React.createElement('input', { checked: this.state.isParam ?? false, onChange: this.changeIsParam, type: 'checkbox' })
                     )
                     : null,
-                this.state.template.id_TemplateType == '2'
+                !this.state.isSQLTemplateType
                     ? this.buildFormItem(
                         'Фильтры',
                         React.createElement(Filters)
                     )
                     : null,
-                this.state.template.id_TemplateType == '1'
+                this.state.isSQLTemplateType
                     ? React.createElement('div', {},
                         this.buildFormItem(
-                            'Источник данных',
-                            React.createElement('select', { value: this.state.template.id_TemplateUpload ?? this.props.template?.id_TemplateUpload, onChange: this.changeDataSource })
-                        ),
-                        this.buildFormItem(
-                            'Логгировать изменения по объекту',
-                            React.createElement('input', { checked: this.state.template.isLogChanges ?? this.props.template?.isLogChanges ?? false, onChange: this.changeIsLogChanges, type: 'checkbox' })
-                        ),
-                        this.buildFormItem(
                             'SQL',
-                            React.createElement('textarea', { value: this.state.template.name ?? this.props.template?.name ?? '', onChange: this.changeCodeSQL, rows: 10 })
+                            React.createElement('textarea', { value: this.state.template.codeSQL ?? this.props.template?.codeSQL ?? '', onChange: this.changeCodeSQL, rows: 10 })
                         ),
                         this.buildFormItem(
                             'Использовать кеш',
@@ -185,7 +208,7 @@ export class DataBindingEditor extends React.Component<IDataBindingEditorProps, 
                     // TODO: 
                     React.createElement(DataSourceParams)
                 ),
-                this.state.template.id_TemplateType == '1'
+                this.state.isSQLTemplateType
                     ? React.createElement('div', {},
                         this.state.isParam
                             ? React.createElement('div', {},
@@ -281,6 +304,10 @@ class DataSourceParams extends React.Component {
                     React.createElement('span', {}, '+'),
                     React.createElement('span', {}, '-'),
                 ),
+                // React.createElement(Grid, { data: [1, 2, 3, 4, 5].map(i => <{ id: number, name: string }>{ id: i, name: `Item #${i}` }), style: {} },
+                //     React.createElement(GridColumn, { field: 'id', width: '30px' }),
+                //     React.createElement(GridColumn, { field: 'name', width: '230px' })
+                // )
                 React.createElement('div', { style: { display: 'flex', flexDirection: 'column' } },
                     React.Children.toArray([1, 2, 3, 4, 5, 6, 7].map(o =>
                         React.createElement('div', {}, `${o} | Param ${o}`)
@@ -294,15 +321,22 @@ class DataSourceParams extends React.Component {
 /// Filters
 ///
 
-class Filters extends React.Component {
+interface IFiltersProps {
+    item: CompareLogicDTO;
+}
+interface IFiltersState {
+
+}
+
+class Filters extends React.Component<IFiltersProps, IFiltersState> {
     render() {
         return (
             React.createElement('div', { style: { display: 'flex', flexDirection: 'column', border: 'solid 1px #ccc' } },
                 React.createElement('div', {},
-                    React.createElement('span', {}, '+ '),
-                    React.createElement('span', {}, '- '),
-                    React.createElement('span', {}, '= '),
-                    React.createElement('span', {}, '=='),
+                    React.createElement('span', {}, ' and '),
+                    React.createElement('span', {}, ' or '),
+                    React.createElement('span', {}, ' + '),
+                    React.createElement('span', {}, ' +[] '),
                 ),
                 React.createElement('div', {},
                     React.createElement('input', { placeholder: 'name' }),

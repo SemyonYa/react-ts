@@ -2,7 +2,10 @@
 //     Changes to this file may cause incorrect behavior and will be lost if
 //     the code is regenerated.
 
+import { ConditionObjectDTO } from './ConditionObjectDTO';
+import { AdmObjectFieldDTO } from './AdmObjectFieldDTO';
 import { TemplateDTO } from './TemplateDTO';
+import { CompareLogicDTO } from './CompareLogicDTO';
 
 export class TemplateFieldDTO
 {
@@ -10,8 +13,8 @@ export class TemplateFieldDTO
 	public colNumber: number;
 	public name: string;
 	public note: string;
-	public conditionObject: any;
-	public admObjectField: any;
+	public conditionObject: ConditionObjectDTO;
+	public adm_ObjectField: AdmObjectFieldDTO;
 	public hidden: boolean;
 	public isRemovedFromResultSet: boolean;
 	public orderType: string;
@@ -20,7 +23,7 @@ export class TemplateFieldDTO
 	public id_TemplateKeyValue: any;
 	public templateKeyValue: TemplateDTO;
 	public id_DataSourceTemplateField: any;
-	public id_LookupAlg: boolean;
+	public sP_LookupAlgId: string;
 	public lookupAlgParameter: string;
-	public templateKeyValueLogic: any;
+	public templateKeyValueLogic: CompareLogicDTO;
 }

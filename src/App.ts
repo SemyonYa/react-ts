@@ -5,19 +5,13 @@ import { Fake } from './models/Fake';
 import { ILayoutProps } from './models/ILayoutProps';
 import { MenuStore } from './models/MenuStore';
 import { APPLICATION_CONTEXT, IApplicationContext } from './context/IApplicationContext';
-import { RouteViewer2 } from './components/RouteViewer2';
-import { MenusManager } from './components/MenusManager';
 import { Alignment, Direction, Markup } from './components/Markup';
 import { Layout } from './components/Layout';
-import { Checkbox } from './components/Checkbox';
 import { PopupWindow } from './components/PopupWindow';
-import { ToggleButton } from './components/ToggleButton';
-import { DropDownList } from './components/DropDownList';
-import { ListStore } from './store/ListStore';
-import { SubmitButton } from './components/SubmitButton';
 import { IViewModelContext, VIEW_MODEL_CONTEXT } from './context/IViewModelContext';
-import { TextInput } from './components/TextInput';
 import { DataBindingEditor } from './components/_DataBindingEditor.ts/DataBindingEditor';
+import { TemplateStore } from './store/TemplateStore';
+import { ConditionObjectStore } from './store/ConditionObjectStore';
 
 interface IAppState {
   expression: string;
@@ -78,7 +72,10 @@ export class App extends React.PureComponent<{}, IAppState> {
         React.createElement(VIEW_MODEL_CONTEXT.Provider, { value: this.viewModelContext },
           React.createElement(Layout, { pageId: 0, menuStore: new MenuStore('http://') },
             React.createElement(Markup, { alignment: Alignment.SpaceAround, direction: Direction.Column },
-              React.createElement(DataBindingEditor, {},)
+              React.createElement(DataBindingEditor, {
+                templateStore: new TemplateStore('https://'),
+                conditionObjectStore: new ConditionObjectStore()
+              })
             )
           )
         ),
