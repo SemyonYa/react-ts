@@ -12,6 +12,7 @@ import { IViewModelContext, VIEW_MODEL_CONTEXT } from './context/IViewModelConte
 import { DataBindingEditor } from './components/_DataBindingEditor.ts/DataBindingEditor';
 import { TemplateStore } from './store/TemplateStore';
 import { ConditionObjectStore } from './store/ConditionObjectStore';
+import { ConditionParameterStore } from './store/ConditionPrameterStore';
 
 interface IAppState {
   expression: string;
@@ -74,7 +75,8 @@ export class App extends React.PureComponent<{}, IAppState> {
             React.createElement(Markup, { alignment: Alignment.SpaceAround, direction: Direction.Column },
               React.createElement(DataBindingEditor, {
                 templateStore: new TemplateStore('https://'),
-                conditionObjectStore: new ConditionObjectStore()
+                conditionObjectStore: new ConditionObjectStore(),
+                conditionParameterStore: new ConditionParameterStore()
               })
             )
           )

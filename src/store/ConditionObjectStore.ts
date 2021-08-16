@@ -16,6 +16,7 @@ export class ConditionObjectStore {
                     fields: [1, 2, 3].map(j => {
                         return {
                             id: `${i}-${j}`,
+                            text: `${i}-${j}-text`,
                             rusName: `Rus name ${i}-${j}`,
                         } as AdmObjectFieldDTO;
                     })
