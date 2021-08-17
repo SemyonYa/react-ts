@@ -8,6 +8,7 @@ import { ConditionParameterStore } from '../../store/ConditionPrameterStore';
 import { ConditionParameterDTO } from '../../models/data-binding/ConditionParameterDTO';
 import { TemplateFieldDTO } from '../../models/data-binding/TemplateFieldDTO';
 import { AdmObjectFieldDTO } from '../../models/data-binding/AdmObjectFieldDTO';
+import { Filter } from "@progress/kendo-react-data-tools";
 
 export interface IDataBindingEditorProps {
     template?: TemplateDTO;
@@ -45,8 +46,9 @@ export class DataBindingEditor extends React.Component<IDataBindingEditorProps, 
         }
     }
 
-    componentDidMount() {
-        const template = this.props.templateStore.getItem('');
+
+    async componentDidMount() {
+        const template = await this.props.templateStore.getItem('');
         const conditionObjects: ConditionObjectDTO[] = this.props.conditionObjectStore.getAll();
         const conditionParameters: ConditionParameterDTO[] = conditionObjects.length > 0 ? this.props.conditionParameterStore.getAll(conditionObjects[0].id) : [];
         template.conditionObjects = [conditionObjects[0]];
@@ -237,6 +239,7 @@ export class DataBindingEditor extends React.Component<IDataBindingEditorProps, 
                                     buildFormItem(
                                         'Фильтры отчета',
                                         React.createElement(Filters)
+                                        // React.createElement(Filter, { value: {}, onChange: () => { } })
                                     ),
                                 ) : null,
                             buildFormItem(
