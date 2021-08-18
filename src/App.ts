@@ -13,6 +13,7 @@ import { DataBindingEditor } from './components/_DataBindingEditor.ts/DataBindin
 import { TemplateStore } from './store/TemplateStore';
 import { ConditionObjectStore } from './store/ConditionObjectStore';
 import { ConditionParameterStore } from './store/ConditionPrameterStore';
+import { TestBinding } from './components/_DataBindingEditor.ts/Test';
 
 interface IAppState {
   expression: string;
@@ -73,6 +74,7 @@ export class App extends React.PureComponent<{}, IAppState> {
         React.createElement(VIEW_MODEL_CONTEXT.Provider, { value: this.viewModelContext },
           React.createElement(Layout, { pageId: 0, menuStore: new MenuStore('http://') },
             React.createElement(Markup, { alignment: Alignment.SpaceAround, direction: Direction.Column },
+              // React.createElement(TestBinding)
               React.createElement(DataBindingEditor, {
                 templateStore: new TemplateStore('https://'),
                 conditionObjectStore: new ConditionObjectStore(),

@@ -8,7 +8,16 @@ import { ConditionParameterStore } from '../../store/ConditionPrameterStore';
 import { ConditionParameterDTO } from '../../models/data-binding/ConditionParameterDTO';
 import { TemplateFieldDTO } from '../../models/data-binding/TemplateFieldDTO';
 import { AdmObjectFieldDTO } from '../../models/data-binding/AdmObjectFieldDTO';
-import { Filter } from "@progress/kendo-react-data-tools";
+import {
+    Filter,
+    Operators,
+    TextFilter,
+    NumericFilter,
+    DateFilter,
+    BooleanFilter,
+    FilterChangeEvent
+} from '@progress/kendo-react-data-tools';
+import { CompositeFilterDescriptor } from '@progress/kendo-data-query'
 
 export interface IDataBindingEditorProps {
     template?: TemplateDTO;
@@ -32,12 +41,10 @@ export class DataBindingEditor extends React.Component<IDataBindingEditorProps, 
         { key: '2', value: 'Условие' },
     ]
 
-
     constructor(props: IDataBindingEditorProps) {
         super(props);
-        let initialTemplate = new TemplateDTO();
         this.state = {
-            template: initialTemplate,
+            template: props.template ? { ...props.template } : new TemplateDTO(),
             conditionObjects: null,
             isParam: true,
             isSQLTemplateType: true,
@@ -45,7 +52,6 @@ export class DataBindingEditor extends React.Component<IDataBindingEditorProps, 
             editingTemplateField: null
         }
     }
-
 
     async componentDidMount() {
         const template = await this.props.templateStore.getItem('');
@@ -93,7 +99,15 @@ export class DataBindingEditor extends React.Component<IDataBindingEditorProps, 
     }
 
     private changeIsParam = (e: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({ isParam: e.target.checked });
+        const isParam = e.target.checked;
+        const template = this.state.template;
+        template.codeSQL = isParam ? '' : 'SELECT ...';
+        template.conditionParameters = isParam ? this.props.conditionParameterStore.getAll(template.conditionObjects[0].id) : [];
+        console.log("🚀 ~ file: DataBindingEditor.ts ~ line 106 ~ DataBindingEditor ~ template.conditionParameters", template.conditionParameters)
+        this.setState({
+            isParam,
+            template
+        });
     }
 
     private changeProcedureManager = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,7 +128,7 @@ export class DataBindingEditor extends React.Component<IDataBindingEditorProps, 
         this.setState({ template });
     }
 
-    // TODO: when multiple data sources will be use
+    // TODO: when multiple data sources will be used
     private changeObjectSource = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const template = this.state.template;
         this.setState({ template });
@@ -145,16 +159,34 @@ export class DataBindingEditor extends React.Component<IDataBindingEditorProps, 
         this.setState({ editingTemplateField: null });
     }
 
+    private addParam = (param: ConditionParameterDTO) => {
+        console.log("🚀 ~ file: DataBindingEditor.ts ~ line 161 ~ DataBindingEditor ~ param", param)
+
+    }
+    private updateParam = (param: ConditionParameterDTO) => {
+        console.log("🚀 ~ file: DataBindingEditor.ts ~ line 165 ~ DataBindingEditor ~ param", param)
+
+    }
+
+    private removeParam = (param: ConditionParameterDTO) => {
+        console.log(param);
+
+        const template = this.state.template;
+        template.conditionParameters = template.conditionParameters.filter(p => p.id !== param.id);
+        this.setState({ template });
+    }
+
 
     // SUBMIT
     private submit = (e: React.BaseSyntheticEvent) => {
         e.preventDefault();
-        let newTemplate = new TemplateDTO();
-        for (let key in newTemplate) {
-            newTemplate[key] = this.state.template[key] ?? (this.props.template ? this.props.template[key] : null);
-        }
-        console.log("🚀 ~ file: DataBindingEditor.ts ~ line 146 ~ DataBindingEditor ~ this.state.template", this.state.template)
-        console.log(newTemplate);
+        console.log(this.state.template);
+
+        // let newTemplate = new TemplateDTO();
+        // for (let key in newTemplate) {
+        //     newTemplate[key] = this.state.template[key] ?? (this.props.template ? this.props.template[key] : null);
+        // }
+        // console.log(newTemplate);
     }
 
 
@@ -166,15 +198,15 @@ export class DataBindingEditor extends React.Component<IDataBindingEditorProps, 
                     React.createElement('h6', {}, 'Источник данных'),
                     buildFormItem(
                         'Название',
-                        React.createElement('input', { value: this.state.template?.name ?? this.props.template?.name ?? '', onChange: this.changeName })
+                        React.createElement('input', { value: this.state.template?.name ?? '', onChange: this.changeName })
                     ),
                     buildFormItem(
                         'Пользовательский',
-                        React.createElement('input', { checked: this.state.template?.isUser ?? this.props.template?.isUser ?? false, disabled: true, onChange: this.changeIsUser, type: 'checkbox' })
+                        React.createElement('input', { checked: this.state.template?.isUser ?? false, disabled: true, onChange: this.changeIsUser, type: 'checkbox' })
                     ),
                     buildFormItem(
                         'Код уникальный',
-                        React.createElement('input', { value: this.state.template?.code ?? this.props.template?.code ?? '', disabled: true, onChange: this.changeCode })
+                        React.createElement('input', { value: this.state.template.code ?? '', disabled: true, onChange: this.changeCode })
                     ),
                     buildFormItem(
                         'Тип источника данных',
@@ -186,7 +218,7 @@ export class DataBindingEditor extends React.Component<IDataBindingEditorProps, 
                     ),
                     buildFormItem(
                         'Источник данных',
-                        React.createElement('select', { value: this.state.template?.conditionObjects?.[0]?.id ?? this.props.template?.conditionObjects?.[0]?.id ?? undefined, onChange: this.changeConditionObject },
+                        React.createElement('select', { value: this.state.template.conditionObjects?.[0]?.id ?? undefined, onChange: this.changeConditionObject },
                             (this.state.conditionObjects?.length > 0)
                                 ? React.Children.toArray(this.state.conditionObjects.map(co =>
                                     React.createElement('option', { value: co.id }, co.rusName)
@@ -196,7 +228,7 @@ export class DataBindingEditor extends React.Component<IDataBindingEditorProps, 
                     ),
                     buildFormItem(
                         'Логгировать изменения по объекту',
-                        React.createElement('input', { checked: this.state.template.isLogChanges ?? this.props.template?.isLogChanges ?? false, onChange: this.changeIsLogChanges, type: 'checkbox' })
+                        React.createElement('input', { checked: this.state.template.isLogChanges ?? false, onChange: this.changeIsLogChanges, type: 'checkbox' })
                     ),
                     this.state.isSQLTemplateType
                         // TODO: toggle
@@ -215,22 +247,22 @@ export class DataBindingEditor extends React.Component<IDataBindingEditorProps, 
                         ? React.createElement('div', {},
                             buildFormItem(
                                 'SQL',
-                                React.createElement('textarea', { value: this.state.template.codeSQL ?? this.props.template?.codeSQL ?? '', onChange: this.changeCodeSQL, rows: 10 })
+                                React.createElement('textarea', { value: this.state.template.codeSQL ?? '', onChange: this.changeCodeSQL, rows: 10 })
                             ),
                             buildFormItem(
                                 'Использовать кеш',
-                                React.createElement('input', { checked: this.state.template.isCache ?? this.props.template?.isCache ?? false, onChange: this.changeIsCache, type: 'checkbox' })
+                                React.createElement('input', { checked: this.state.template.isCache ?? false, onChange: this.changeIsCache, type: 'checkbox' })
                             ),
                             !this.state.isParam
                                 ? buildFormItem(
                                     'Процедура-менеджер',
-                                    React.createElement('input', { value: this.state.template.procedureManager ?? this.props.template?.procedureManager ?? '', onChange: this.changeProcedureManager })
+                                    React.createElement('input', { value: this.state.template.procedureManager ?? '', onChange: this.changeProcedureManager })
                                 )
                                 : null,
                         ) : null,
                     buildFormItem(
                         'Параметры источника данных',
-                        React.createElement(ConditionParameters, { params: this.state.conditionParameters })
+                        React.createElement(ConditionParametersGrid, { params: this.state.conditionParameters, isSQLCode: !this.state.isParam, addParam: this.addParam, updateParam: this.updateParam, removeParam: this.removeParam })
                     ),
                     this.state.isSQLTemplateType
                         ? React.createElement('div', {},
@@ -240,6 +272,7 @@ export class DataBindingEditor extends React.Component<IDataBindingEditorProps, 
                                         'Фильтры отчета',
                                         React.createElement(Filters)
                                         // React.createElement(Filter, { value: {}, onChange: () => { } })
+                                        // React.createElement(Tree,)
                                     ),
                                 ) : null,
                             buildFormItem(
@@ -412,31 +445,154 @@ class FieldEditorForm extends React.Component<IFieldEditorFormProps, IFieldEdito
     }
 }
 
-
 ///
-/// Data Source Params
+/// Condition parameters
 ///
-interface IConditionParameters {
+interface IConditionParametersGridProps {
+    isSQLCode: boolean;
     params: ConditionParameterDTO[];
+    removeParam(param: ConditionParameterDTO): void;
+    addParam(param: ConditionParameterDTO): void;
+    updateParam(param: ConditionParameterDTO): void;
 }
 
-class ConditionParameters extends React.Component<IConditionParameters> {
+interface IConditionParametersGridState {
+    editingParam: ConditionParameterDTO;
+}
+
+class ConditionParametersGrid extends React.Component<IConditionParametersGridProps, IConditionParametersGridState> {
+
+    constructor(props: IConditionParametersGridProps) {
+        super(props);
+        this.state = {
+            editingParam: null
+        }
+    }
+    save = (param: ConditionParameterDTO) => {
+        if (!param.id) {
+            const maxId: number = this.props.params.reduce((prev, curr) => { return +prev.id! > +curr.id! ? prev : curr }).id
+            param.id = maxId + 1;
+            this.props.addParam(param);
+        } else {
+            this.props.updateParam(param);
+        }
+        this.setState({ editingParam: null });
+    }
+
+
+    showForm = (param?: ConditionParameterDTO) => {
+        this.setState({ editingParam: param ?? new ConditionParameterDTO() })
+    }
+
+    hideForm = () => {
+        this.setState({ editingParam: null })
+    }
+
     render() {
         return (
-            React.createElement('div', { style: { display: 'flex', flexDirection: 'column', border: 'solid 1px #ccc' } },
-                React.createElement('div', {},
-                    React.createElement('span', {}, '+'),
-                    React.createElement('span', {}, '-'),
-                ),
-                React.createElement('div', { style: { display: 'flex', flexDirection: 'column' } },
-                    React.Children.toArray(this.props.params.map(p =>
-                        React.createElement('div', {}, `${p.id} | ${p.name} | ${p.description}`)
-                    ))
+            this.state.editingParam
+                ? React.createElement(ConditionParameterForm, { param: this.state.editingParam, onSubmit: this.save, key: this.state.editingParam.id, onCancel: this.hideForm })
+                : React.createElement('div', { style: { display: 'flex', flexDirection: 'column', border: 'solid 1px #ccc' } },
+                    React.createElement('div', {},
+                        React.createElement('span', { onClick: this.showForm }, '+')
+                    ),
+                    React.createElement('div', { style: { display: 'flex', flexDirection: 'column' } },
+                        // React.Children.map(this.props.params, p =>
+                        //     this.props.isSQLCode
+                        //         ? React.createElement('div', { key: p.id },
+                        //             `${p.id} | ${p.name} | ${p.description}`,
+                        //             React.createElement('button', { onClick: () => { this.showForm(p) } }, '[ред.]'),
+                        //             React.createElement('button', { onClick: () => { this.props.removeParam(p) } }, '[удалить.]'),
+                        //         )
+                        //         : React.createElement('div', { key: p.id }, `${p.id} | ${p.name} | ${p.description}`)
+                        // ),
+                        React.Children.toArray(this.props.params.map(p =>
+                            this.props.isSQLCode
+                                ? React.createElement('div', {},
+                                    `${p.id} | ${p.name} | ${p.description}`,
+                                    React.createElement('button', { onClick: () => { this.showForm(p) } }, '[ред.]'),
+                                    React.createElement('button', { onClick: () => { this.props.removeParam(p) } }, '[удалить.]'),
+                                )
+                                : React.createElement('div', {}, `${p.id} | ${p.name} | ${p.description}`)
+                        ))
+                    )
                 )
+        );
+    }
+}
+
+// ConditionParameterForm
+
+interface IConditionParameterFormProps {
+    param?: ConditionParameterDTO;
+    onSubmit(param: ConditionParameterDTO): void;
+    onCancel(): void;
+}
+
+interface IConditionParameterFormState {
+    param: ConditionParameterDTO;
+}
+
+class ConditionParameterForm extends React.Component<IConditionParameterFormProps, IConditionParameterFormState> {
+    private systemTypes: string[] = [
+        'boolean',
+        'string',
+        'number'
+    ];
+
+    constructor(props: IConditionParameterFormProps) {
+        super(props);
+        this.state = {
+            param: { ...props.param }
+        };
+    }
+
+    private submit = () => {
+        this.props.onSubmit(this.state.param);
+    }
+
+    private changeSystemType = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const param = this.state.param;
+        param.systemType = e.target.value;
+        this.setState({ param });
+    }
+
+    private changeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const param = this.state.param;
+        param.name = e.target.value;
+        this.setState({ param });
+    }
+    private changeDescritpion = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const param = this.state.param;
+        param.description = e.target.value;
+        this.setState({ param });
+    }
+    private changeDefaultValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const param = this.state.param;
+        param.defaultValue = e.target.value;
+        this.setState({ param });
+    }
+
+    render() {
+        return (
+            React.createElement('div', { style: { display: 'flex' } },
+                // React.createElement('input', { type: 'checkbox' }),
+                React.createElement('input', { value: this.state.param.name ?? '', onChange: this.changeName }),
+                React.createElement('input', { value: this.state.param.description ?? '', onChange: this.changeDescritpion }),
+                React.createElement('input', { value: this.state.param.defaultValue ?? '', onChange: this.changeDefaultValue }),
+                React.createElement('select', { value: this.state.param.systemType ?? 'string', onChange: this.changeSystemType },
+                    React.Children.toArray(this.systemTypes.map(t =>
+                        React.createElement('option', { value: t }, t)
+                    ))
+                ),
+                React.createElement('button', { type: 'button', onClick: this.submit }, 'Сохранить'),
+                React.createElement('button', { type: 'button', onClick: this.props.onCancel }, 'Отменить'),
             )
         );
     }
 }
+
+
 
 ///
 /// Filters
