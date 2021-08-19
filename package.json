@@ -5,7 +5,9 @@
     "dependencies": {
         "@progress/kendo-licensing": "^1.2.0",
         "@progress/kendo-react-animation": "^4.8.0",
+        "@progress/kendo-react-dialogs": "^4.8.0",
         "@progress/kendo-react-layout": "^4.8.0",
+        "@progress/kendo-react-listbox": "^4.8.0",
         "@progress/kendo-react-notification": "^4.8.0",
         "@progress/kendo-react-treeview": "^4.8.0",
         "@testing-library/jest-dom": "^5.14.1",
@@ -18,6 +20,7 @@
         "@types/react-dom": "^17.0.8",
         "react": "^17.0.2",
         "react-dom": "^17.0.2",
+        "react-router-dom": "^5.2.0",
         "react-scripts": "4.0.3",
         "typescript": "^4.3.5",
         "web-vitals": "^1.1.2"

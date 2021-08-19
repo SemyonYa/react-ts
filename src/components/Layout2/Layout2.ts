@@ -1,7 +1,7 @@
 import React from "react";
-import Aside from "./Aside";
-import { Header } from "./Header";
-import PageNav from "./PageNav";
+// import Aside from "./Aside";
+// import { Header } from "./Header";
+// import PageNav from "./PageNav";
 
 export class Layout2 extends React.Component {
     render() {
