@@ -2,7 +2,7 @@ import React from "react";
 import logo from '../../assets/logo.svg';
 import { APPLICATION_CONTEXT, IApplicationContext } from '../../context/IApplicationContext';
 import { ILayoutComponentProps } from './ILayoutComponentProps';
-import { TreeView } from "@progress/kendo-react-treeview";
+import { TreeView, TreeViewExpandChangeEvent, TreeViewItemClickEvent } from "@progress/kendo-react-treeview";
 
 export class LayoutAdmin extends React.Component<ILayoutComponentProps> {
     logo = '../../assets/logo.svg';
@@ -30,11 +30,11 @@ export class LayoutAdmin extends React.Component<ILayoutComponentProps> {
         }]
     }];
 
-    private onExpandChange = event => {
+    private onExpandChange = (event: TreeViewExpandChangeEvent) => {
         event.item.expanded = !event.item.expanded;
     };
 
-    private onItemClick = event => {
+    private onItemClick = (event: TreeViewItemClickEvent) => {
         event.item.selected = !event.item.selected;
     };
 
@@ -54,7 +54,13 @@ export class LayoutAdmin extends React.Component<ILayoutComponentProps> {
                 <nav>
                     <div className='nav--logo'>
                         <img src={logo} alt="eurochem" />
-                        <TreeView data={this.tree} expandIcons={true} onExpandChange={this.onExpandChange} aria-multiselectable={true} onItemClick={this.onItemClick} />
+                        <TreeView
+                            data={this.tree}
+                            expandIcons={true}
+                            onExpandChange={this.onExpandChange}
+                            aria-multiselectable={true}
+                            onItemClick={this.onItemClick}
+                        />
                     </div>
                 </nav>
                 <div className='body'></div>
