@@ -161,20 +161,16 @@ export class DataBindingEditor extends React.Component<IDataBindingEditorProps, 
 
     private addParam = (param: ConditionParameterDTO) => {
         console.log("🚀 ~ file: DataBindingEditor.ts ~ line 161 ~ DataBindingEditor ~ param", param)
-
+        // TODO: 
     }
     private updateParam = (param: ConditionParameterDTO) => {
         console.log("🚀 ~ file: DataBindingEditor.ts ~ line 165 ~ DataBindingEditor ~ param", param)
-
+        // TODO: 
     }
 
     private removeParam = (param: ConditionParameterDTO) => {
         console.log(param);
-
-        const template = this.state.template;
-        template.conditionParameters = template.conditionParameters.filter(p => p.id !== param.id);
-        this.setState({ template });
-        this.forceUpdate();
+        // TODO: 
     }
 
 
@@ -183,11 +179,6 @@ export class DataBindingEditor extends React.Component<IDataBindingEditorProps, 
         e.preventDefault();
         console.log(this.state.template);
 
-        // let newTemplate = new TemplateDTO();
-        // for (let key in newTemplate) {
-        //     newTemplate[key] = this.state.template[key] ?? (this.props.template ? this.props.template[key] : null);
-        // }
-        // console.log(newTemplate);
     }
 
 
@@ -232,7 +223,7 @@ export class DataBindingEditor extends React.Component<IDataBindingEditorProps, 
                         React.createElement('input', { checked: this.state.template.isLogChanges ?? false, onChange: this.changeIsLogChanges, type: 'checkbox' })
                     ),
                     this.state.isSQLTemplateType
-                        // TODO: toggle
+                        // TODO: kendo toggle
                         ? buildFormItem(
                             'Работа с параметрами / Работа с SQL',
                             React.createElement('input', { checked: this.state.isParam ?? false, onChange: this.changeIsParam, type: 'checkbox' })
@@ -242,6 +233,8 @@ export class DataBindingEditor extends React.Component<IDataBindingEditorProps, 
                         ? buildFormItem(
                             'Фильтры',
                             React.createElement(Filters)
+                            // TODO: add kendo filter
+                            // React.createElement(Filter)
                         )
                         : null,
                     this.state.isSQLTemplateType
@@ -272,8 +265,8 @@ export class DataBindingEditor extends React.Component<IDataBindingEditorProps, 
                                     buildFormItem(
                                         'Фильтры отчета',
                                         React.createElement(Filters)
+                                        // TODO: add kendo filter
                                         // React.createElement(Filter, { value: {}, onChange: () => { } })
-                                        // React.createElement(Tree,)
                                     ),
                                 ) : null,
                             buildFormItem(
@@ -322,6 +315,7 @@ export class DataBindingEditor extends React.Component<IDataBindingEditorProps, 
             );
     }
 }
+
 
 ///
 /// TemplateField
@@ -440,6 +434,8 @@ class FieldEditorForm extends React.Component<IFieldEditorFormProps, IFieldEdito
                     React.createElement('input', { value: this.state.note ?? this.props.field.note ?? '', onChange: this.changeNote })
                 ),
                 React.createElement(Filters),
+                // TODO: add kendo filter
+                // React.createElement(Filter),
                 React.createElement('button', { type: 'button', onClick: this.submit }, 'Сохранить')
             )
         );
@@ -498,15 +494,6 @@ class ConditionParametersGrid extends React.Component<IConditionParametersGridPr
                         React.createElement('span', { onClick: this.showForm }, '+')
                     ),
                     React.createElement('div', { style: { display: 'flex', flexDirection: 'column' } },
-                        // React.Children.map(this.props.params, p =>
-                        //     this.props.isSQLCode
-                        //         ? React.createElement('div', { key: p.id },
-                        //             `${p.id} | ${p.name} | ${p.description}`,
-                        //             React.createElement('button', { onClick: () => { this.showForm(p) } }, '[ред.]'),
-                        //             React.createElement('button', { onClick: () => { this.props.removeParam(p) } }, '[удалить.]'),
-                        //         )
-                        //         : React.createElement('div', { key: p.id }, `${p.id} | ${p.name} | ${p.description}`)
-                        // ),
                         React.Children.toArray(this.props.params.map(p =>
                             this.props.isSQLCode
                                 ? React.createElement('div', {},
@@ -592,7 +579,6 @@ class ConditionParameterForm extends React.Component<IConditionParameterFormProp
         );
     }
 }
-
 
 
 ///
