@@ -74,7 +74,7 @@ export class App extends React.PureComponent<{}, IAppState> {
         React.createElement(VIEW_MODEL_CONTEXT.Provider, { value: this.viewModelContext },
           React.createElement(Layout, { pageId: 0, menuStore: new MenuStore('http://') },
             React.createElement(Markup, { alignment: Alignment.SpaceAround, direction: Direction.Column },
-              // React.createElement(TestBinding)
+              // React.createElement(TestBinding),
               React.createElement(DataBindingEditor, {
                 templateStore: new TemplateStore('https://'),
                 conditionObjectStore: new ConditionObjectStore(),

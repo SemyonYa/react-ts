@@ -174,6 +174,7 @@ export class DataBindingEditor extends React.Component<IDataBindingEditorProps, 
         const template = this.state.template;
         template.conditionParameters = template.conditionParameters.filter(p => p.id !== param.id);
         this.setState({ template });
+        this.forceUpdate();
     }
 
 
