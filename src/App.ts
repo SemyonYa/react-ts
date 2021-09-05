@@ -13,6 +13,7 @@ import { DropDownList } from './components/DropDownList';
 import { ListStore } from './store/ListStore';
 import { LayoutAdmin } from './components/Layout2/LayoutAdmin';
 import { EditedMenuItemsStore } from './store/EditedMenuItemsStore';
+import { PageEditor } from './components/PageEditor/PageEditor';
 
 interface IAppState {
   expression: string;
@@ -59,6 +60,10 @@ export class App extends React.PureComponent<{}, IAppState> {
       React.createElement(APPLICATION_CONTEXT.Provider, { value: this.applicationContext },
         React.createElement(LayoutAdmin, { pageId: 0, menuStore: new EditedMenuItemsStore('http://'), menuIds: [] },
           React.createElement(FlexMarkup, { alignment: Alignment.SpaceAround, direction: Direction.Column },
+            // React.createElement('section', {style: {border: 'solid 1px '}}),
+            React.createElement('div', { style: { backgroundColor: '#E5EDF5', borderRadius: '4px', boxShadow: 'inset 0px 2px 4px 0 rgba(0, 0, 0, .15)', padding: '25px', marginBottom: '40px' } },
+              React.createElement(PageEditor),
+            ),
             React.createElement(FlexMarkup, { alignment: Alignment.SpaceAround, direction: Direction.Row },
               React.createElement('div', { style: { backgroundColor: '#E5EDF5', borderRadius: '4px', boxShadow: 'inset 0px 2px 4px 0 rgba(0, 0, 0, .15)', padding: '25px', marginRight: '40px' } }, this.lorem1),
               React.createElement('div', { style: { backgroundColor: '#E5EDF5', borderRadius: '4px', boxShadow: 'inset 0px 2px 4px 0 rgba(0, 0, 0, .15)', padding: '25px' } }, this.lorem2),

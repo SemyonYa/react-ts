@@ -89,7 +89,7 @@ export class LayoutAdmin extends React.Component<ILayoutAdminComponentProps, ILa
                     </div>
                 </nav>
                 <div className='body'>
-
+                    {this.props.children}
                 </div>
             </div>
         );
